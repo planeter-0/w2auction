@@ -1,6 +1,7 @@
 package com.planeter.w2auction.shiro;
 
 import com.planeter.w2auction.service.UserInfoService;
+import com.planeter.w2auction.shiro.filter.AnyRolesAuthorizationFilter;
 import com.planeter.w2auction.shiro.realm.DbShiroRealm;
 import com.planeter.w2auction.shiro.realm.JWTShiroRealm;
 import org.apache.shiro.authc.Authenticator;
@@ -40,31 +41,6 @@ public class ShiroConfig {
 
         return filterRegistration;
     }
-//    @Bean(name = "shiroFilter")
-//    public ShiroFilterFactoryBean shiroFilter(SecurityManager securityManager) {
-//        System.out.println("ShiroConfiguration.shiroFilter()");
-//        ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
-//        //设置securityManager
-//        shiroFilterFactoryBean.setSecurityManager(securityManager);
-//        // 拦截器.
-//        Map<String, String> filterChainDefinitionMap = new LinkedHashMap<String, String>();
-//        // 配置不会被拦截的链接 顺序判断
-//        filterChainDefinitionMap.put("/static/**", "anon");
-//        // 配置退出 过滤器,其中的具体的退出代码Shiro已经替我们实现了
-//        filterChainDefinitionMap.put("/logout", "logout");
-//        // <!-- 过滤链定义，从上向下顺序执行，一般将/**放在最为下边 -->:这是一个坑呢，一不小心代码就不好使了;
-//        // <!-- authc:所有url都必须认证通过才可以访问; anon:所有url都都可以匿名访问-->
-//        filterChainDefinitionMap.put("/**", "authc");
-//        // 如果不设置默认会自动寻找Web工程根目录下的"/login.jsp"页面
-//        shiroFilterFactoryBean.setLoginUrl("/login");
-//        // 登录成功后要跳转的链接
-//        shiroFilterFactoryBean.setSuccessUrl("/index");
-//
-//        //未授权界面;
-//        shiroFilterFactoryBean.setUnauthorizedUrl("/403");
-//        shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
-//        return shiroFilterFactoryBean;
-//    }
 
     /**
      * 初始化Authenticator
@@ -73,7 +49,7 @@ public class ShiroConfig {
     public Authenticator authenticator(UserInfoService userInfoService) {
         ModularRealmAuthenticator authenticator = new ModularRealmAuthenticator();
         //设置两个Realm，一个用于用户登录验证和访问权限获取；一个用于jwt token的认证
-        authenticator.setRealms(Arrays.asList(jwtShiroRealm(userInfoService), dbShiroRealm(userInfoService)));
+        authenticator.setRealms(Arrays.asList(jwtShiroRealm(), dbShiroRealm()));
         //设置多个realm认证策略，一个成功即跳过其它的
         authenticator.setAuthenticationStrategy(new FirstSuccessfulStrategy());
         return authenticator;
@@ -117,7 +93,7 @@ public class ShiroConfig {
         ShiroFilterFactoryBean factoryBean = new ShiroFilterFactoryBean();
         factoryBean.setSecurityManager(securityManager);
         Map<String, Filter> filterMap = factoryBean.getFilters();
-        filterMap.put("authcToken", createAuthFilter(userInfoService));
+        filterMap.put("authToken", createAuthFilter()); //jwt过滤器
         filterMap.put("anyRole", createRolesFilter());//角色过滤器
         factoryBean.setFilters(filterMap);
         factoryBean.setFilterChainDefinitionMap(shiroFilterChainDefinition().getFilterChainMap());
@@ -132,49 +108,24 @@ public class ShiroConfig {
     protected ShiroFilterChainDefinition shiroFilterChainDefinition() {
         DefaultShiroFilterChainDefinition chainDefinition = new DefaultShiroFilterChainDefinition();
         chainDefinition.addPathDefinition("/login", "noSessionCreation,anon");  //login不做认证，noSessionCreation的作用是用户在操作session时会抛异常
-        chainDefinition.addPathDefinition("/logout", "noSessionCreation,authcToken[permissive]"); //做用户认证，permissive参数的作用是当token无效时也允许请求访问，不会返回鉴权未通过的错误
+        chainDefinition.addPathDefinition("/logout", "noSessionCreation,authToken[permissive]"); //做用户认证，permissive参数的作用是当token无效时也允许请求访问，不会返回鉴权未通过的错误
         chainDefinition.addPathDefinition("/image/**", "anon");
-        chainDefinition.addPathDefinition("/admin/**", "noSessionCreation,authcToken,anyRole[admin,manager]"); //只允许admin或manager角色的用户访问
-        chainDefinition.addPathDefinition("/article/list", "noSessionCreation,authcToken");
-        chainDefinition.addPathDefinition("/article/*", "noSessionCreation,authcToken[permissive]");
-        chainDefinition.addPathDefinition("/**", "noSessionCreation,authcToken"); // 默认进行用户鉴权
-        chainDefinition.addPathDefinition("/article/edit", "authc,role[admin]");
-        chainDefinition.addPathDefinition("/**", "noSessionCreation,authcToken");
+        chainDefinition.addPathDefinition("/admin/**", "noSessionCreation,authToken,anyRole[admin,manager]"); //只允许admin或manager角色的用户访问
+        chainDefinition.addPathDefinition("/article/list", "noSessionCreation,authToken");
+        chainDefinition.addPathDefinition("/article/*", "noSessionCreation,authToken[permissive]");
+        chainDefinition.addPathDefinition("/**", "noSessionCreation,authToken"); // 默认进行用户鉴权
+        chainDefinition.addPathDefinition("/article/edit", "auth,role[admin]");
+        chainDefinition.addPathDefinition("/**", "noSessionCreation,authToken");
         return chainDefinition;
     }
 
-    protected JwtAuthFilter createAuthFilter(UserInfoService userInfoService) {
-        return new JwtAuthFilter(userInfoService);
+    protected JwtAuthFilter createAuthFilter() {
+        return new JwtAuthFilter();
     }
 
     protected AnyRolesAuthorizationFilter createRolesFilter() {
         return new AnyRolesAuthorizationFilter();
     }
-
-    /**
-     * DbShiroRealm凭证匹配器
-     * md5迭代两次
-     */
-    @Bean(name = "hashedCredentialsMatcher")
-    public HashedCredentialsMatcher hashedCredentialsMatcher() {
-        HashedCredentialsMatcher hashedCredentialsMatcher = new HashedCredentialsMatcher();
-        hashedCredentialsMatcher.setHashAlgorithmName("md5");
-        hashedCredentialsMatcher.setHashIterations(2);
-        return hashedCredentialsMatcher;
-    }
-    /**
-     * JWTShiroRealm凭证匹配器
-     * （由于我们的密码校验交给Shiro的SimpleAuthenticationInfo进行处理了）
-     *
-     * @return
-     */
-//    @Bean
-//    public JWTC hashedCredentialsMatcher() {
-//        HashedCredentialsMatcher hashedCredentialsMatcher = new HashedCredentialsMatcher();
-//        hashedCredentialsMatcher.setHashAlgorithmName("md5"); // 散列算法:这里使用MD5算法;
-//        hashedCredentialsMatcher.setHashIterations(2); // 散列的次数，比如散列两次，相当于 md5(md5(""));
-//        return hashedCredentialsMatcher;
-//    }
 
 //    /**
 //     * 注入安全管理器 ( DefaultWebSecurityManager )

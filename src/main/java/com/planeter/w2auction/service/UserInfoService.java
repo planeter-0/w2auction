@@ -19,4 +19,8 @@ public interface UserInfoService {
     public List<String> getPermissionsByUsername(String username);
     /** 删除用户 */
     public void deleteUserInfo(Integer id);
+    /** 根据用户信息生成JWTToken */
+    public String generateJwtToken(String username);
+    /** 获取含JWT加密盐的用户信息 */
+    public UserInfo getJwtUserInfo(String username);
 }

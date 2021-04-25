@@ -25,7 +25,7 @@ public class AnyRolesAuthorizationFilter extends AuthorizationFilter {
         	return true;
         
         Subject subject = getSubject(servletRequest, servletResponse);
-        String[] rolesArray = (String[]) mappedValue;
+        String[] rolesArray = (String[]) mappedValue; //值
         if (rolesArray == null || rolesArray.length == 0) { //没有角色限制，有权限访问
             return true;
         }

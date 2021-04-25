@@ -2,10 +2,10 @@ package com.planeter.w2auction.shiro;
 
 import com.planeter.w2auction.service.UserInfoService;
 import com.planeter.w2auction.shiro.filter.AnyRolesAuthorizationFilter;
+import com.planeter.w2auction.shiro.filter.JwtAuthFilter;
 import com.planeter.w2auction.shiro.realm.DbShiroRealm;
 import com.planeter.w2auction.shiro.realm.JWTShiroRealm;
 import org.apache.shiro.authc.Authenticator;
-import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.authc.pam.FirstSuccessfulStrategy;
 import org.apache.shiro.authc.pam.ModularRealmAuthenticator;
 import org.apache.shiro.mgt.SessionStorageEvaluator;

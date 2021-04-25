@@ -1,8 +1,9 @@
-package com.planeter.w2auction.shiro;
+package com.planeter.w2auction.shiro.filter;
 
 import com.planeter.w2auction.common.utils.JwtUtils;
 import com.planeter.w2auction.entity.UserInfo;
 import com.planeter.w2auction.service.UserInfoService;
+import com.planeter.w2auction.shiro.JWTToken;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;

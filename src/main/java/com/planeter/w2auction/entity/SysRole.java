@@ -25,7 +25,7 @@ public class SysRole {
 
     // 用户 -- 角色关系：多对多
     @JsonIgnoreProperties(value = {"roles"})
-    @ManyToMany(mappedBy = "roles") // 用户主控角色被控
+    @ManyToMany() // 用户主控角色被控
     @JoinTable(name = "sys_user_role",
             joinColumns = {@JoinColumn(name = "role_id")},
             inverseJoinColumns = {@JoinColumn(name = "uid")})

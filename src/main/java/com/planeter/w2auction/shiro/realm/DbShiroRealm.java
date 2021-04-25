@@ -9,6 +9,7 @@ import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.util.ByteSource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 
 import javax.annotation.Resource;
@@ -19,11 +20,16 @@ import javax.annotation.Resource;
 public class DbShiroRealm extends AuthorizingRealm {
     @Resource
     UserInfoService userInfoService;
-    @Resource
-    HashedCredentialsMatcher hashedCredentialsMatcher;
+    @Autowired
+    public HashedCredentialsMatcher getHashedCredentialsMatcher() {
+        HashedCredentialsMatcher hashedCredentialsMatcher = new HashedCredentialsMatcher();
+        hashedCredentialsMatcher.setHashAlgorithmName("md5");
+        hashedCredentialsMatcher.setHashIterations(2);
+        return hashedCredentialsMatcher;
+    }
     //设置凭证匹配器
     public DbShiroRealm() {
-        this.setCredentialsMatcher(hashedCredentialsMatcher);
+        this.setCredentialsMatcher(getHashedCredentialsMatcher());
     }
 
     @Override
@@ -71,13 +77,5 @@ public class DbShiroRealm extends AuthorizingRealm {
         //授予权限
         simpleAuthorizationInfo.addStringPermissions(userInfoService.getPermissionsByUsername(userInfo.getUsername()));
         return simpleAuthorizationInfo;
-    }
-
-    @Bean("hashedCredentialsMatcher")
-    public HashedCredentialsMatcher hashedCredentialsMatcher() {
-        HashedCredentialsMatcher hashedCredentialsMatcher = new HashedCredentialsMatcher();
-        hashedCredentialsMatcher.setHashAlgorithmName("md5");
-        hashedCredentialsMatcher.setHashIterations(2);
-        return hashedCredentialsMatcher;
     }
 }

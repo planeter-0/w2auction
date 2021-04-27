@@ -12,7 +12,7 @@ public enum ExceptionMsg {
     NoSuchPermission("100400","没有相应权限"),
     LimitSize("000310","超出网盘容量限制"),
     UNPASSED("000300","未审核或审核未通过"),
-    FileEmpty("000400","上传文件为空"),
+    UploadFailed("000400","上传文件失败"),
     ;
    private ExceptionMsg(String code, String msg) {
         this.code = code;

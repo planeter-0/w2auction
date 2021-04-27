@@ -1,10 +1,8 @@
 package com.planeter.w2auction.service.impl;
 
-import com.planeter.w2auction.dao.MemberDao;
-import com.planeter.w2auction.dao.SysRoleDao;
-import com.planeter.w2auction.entity.Member;
-import com.planeter.w2auction.entity.SysRole;
-import com.planeter.w2auction.entity.UserInfo;
+import com.planeter.w2auction.dao.RoleDao;
+import com.planeter.w2auction.entity.Role;
+import com.planeter.w2auction.entity.User;
 import com.planeter.w2auction.service.MemberService;
 import org.apache.shiro.crypto.SecureRandomNumberGenerator;
 import org.apache.shiro.crypto.hash.SimpleHash;
@@ -12,14 +10,13 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 @Service
 public class MemberServiceImpl implements MemberService {
     @Resource
     MemberDao memberDao;
     @Resource
-    SysRoleDao roleDao;
+    RoleDao roleDao;
     @Override
     public Member registerMember(String username,String password) {
         Member member = new Member();
@@ -28,9 +25,9 @@ public class MemberServiceImpl implements MemberService {
             String salt = new SecureRandomNumberGenerator().nextBytes().toString();
             String encodedPassword = new SimpleHash("md5", password, salt, 2).toString();
             //创建userinfo
-            List<SysRole> roles = new ArrayList<>();
+            List<Role> roles = new ArrayList<>();
             roles.add(roleDao.findByName("user"));//角色user
-            UserInfo userInfo = new UserInfo(username, encodedPassword, salt, 1, roles);
+            User userInfo = new User(username, encodedPassword, salt, 1, roles);
             //将member与userinfo连表写入数据库
             member.setUserInfo(userInfo);
             memberDao.save(member);//插入
@@ -42,12 +39,20 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public Member getMember(Integer id) {
-        return null;
+        return memberDao.getOne(id.longValue());
     }
 
     @Override
-    public Member updateMember(Member member) {
-        return null;
+    public void updateMember(Member member) {
+        if (member.getAddress() != null&&member.getPhone()!=null){
+            List<Role> roles= member.getUserInfo().getRoles();
+            roles.add(roleDao.findByName("member"));
+            member.getUserInfo().setRoles(roles);
+        }
     }
 
+    @Override
+    public void saveMember(Member member) {
+        memberDao.save(member);
+    }
 }

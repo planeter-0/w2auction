@@ -4,7 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.planeter.w2auction.entity.UserInfo;
+import com.planeter.w2auction.entity.User;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -28,7 +28,7 @@ public class JWTCredentialsMatcher implements CredentialsMatcher {
         Object stored = authenticationInfo.getCredentials();
         String salt = stored.toString();
 
-        UserInfo userInfo = (UserInfo) authenticationInfo.getPrincipals().getPrimaryPrincipal();
+        User userInfo = (User) authenticationInfo.getPrincipals().getPrimaryPrincipal();
         try {
             // 使用HMAC256生成的token
             JWTVerifier verifier = JWT.require(Algorithm.HMAC256(salt))

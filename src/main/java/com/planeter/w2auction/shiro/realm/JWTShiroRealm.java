@@ -1,8 +1,8 @@
 package com.planeter.w2auction.shiro.realm;
 
 import com.planeter.w2auction.common.utils.JwtUtils;
-import com.planeter.w2auction.entity.UserInfo;
-import com.planeter.w2auction.service.UserInfoService;
+import com.planeter.w2auction.entity.User;
+import com.planeter.w2auction.service.UserService;
 import com.planeter.w2auction.shiro.matcher.JWTCredentialsMatcher;
 import com.planeter.w2auction.shiro.JWTToken;
 import org.apache.shiro.authc.AuthenticationException;
@@ -21,7 +21,7 @@ import javax.annotation.Resource;
  */
 public class JWTShiroRealm extends AuthorizingRealm {
     @Resource
-    UserInfoService userInfoService;
+    UserService userInfoService;
     // 设置Matcher
     public JWTShiroRealm(){
         this.setCredentialsMatcher(new JWTCredentialsMatcher());
@@ -51,7 +51,7 @@ public class JWTShiroRealm extends AuthorizingRealm {
         JWTToken jwtToken = (JWTToken) authToken;
         String token = jwtToken.getToken();
 
-        UserInfo userInfo = userInfoService.getJwtUserInfo(JwtUtils.getUsername(token));
+        User userInfo = userInfoService.getJwtUserInfo(JwtUtils.getUsername(token));
         if(userInfo == null)
             throw new AuthenticationException("token过期，请重新登录");
         SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(

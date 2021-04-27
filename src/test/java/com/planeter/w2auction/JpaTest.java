@@ -1,9 +1,9 @@
 package com.planeter.w2auction;
 
-import com.planeter.w2auction.dao.SysRoleDao;
+import com.planeter.w2auction.dao.RoleDao;
 import com.planeter.w2auction.dao.UserInfoDao;
-import com.planeter.w2auction.entity.SysPermission;
-import com.planeter.w2auction.entity.SysRole;
+import com.planeter.w2auction.entity.Permission;
+import com.planeter.w2auction.entity.Role;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,13 +16,13 @@ public class JpaTest {
     @Resource
     UserInfoDao userInfoDao;
     @Autowired
-    SysRoleDao sysRoleDao;
+    RoleDao sysRoleDao;
     @Test
     public void roleAdd(){
-        SysRole role = new SysRole();
-        List<SysPermission> permissions = new ArrayList<>();
+        Role role = new Role();
+        List<Permission> permissions = new ArrayList<>();
 
-        permissions.add(new SysPermission("item:view"));
+        permissions.add(new Permission("item:view"));
         role.setName("user");
         role.setPermissions(permissions);
         sysRoleDao.save(role);

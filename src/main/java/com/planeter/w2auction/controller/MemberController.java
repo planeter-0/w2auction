@@ -1,21 +1,14 @@
 package com.planeter.w2auction.controller;
 
-import com.alibaba.fastjson.JSONObject;
 import com.planeter.w2auction.common.result.ExceptionMsg;
 import com.planeter.w2auction.common.result.ResponseData;
-import com.planeter.w2auction.dto.FrontMember;
-import com.planeter.w2auction.entity.Member;
-import com.planeter.w2auction.entity.SysRole;
-import com.planeter.w2auction.entity.UserInfo;
+import com.planeter.w2auction.dto.UserInfo;
 import com.planeter.w2auction.service.MemberService;
-import com.planeter.w2auction.service.RoleService;
-import com.planeter.w2auction.service.UserInfoService;
+import com.planeter.w2auction.service.UserService;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
-import org.apache.shiro.crypto.SecureRandomNumberGenerator;
-import org.apache.shiro.crypto.hash.SimpleHash;
 import org.apache.shiro.subject.Subject;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -24,11 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.HtmlUtils;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
 
 @RestController
 /**
@@ -38,9 +26,7 @@ public class MemberController {
     @Resource
     MemberService memberService;
     @Resource
-    UserInfoService userInfoService;
-    @Resource
-    RoleService roleService;
+    UserService userInfoService;
 
     /**
      * 会员注册
@@ -49,31 +35,28 @@ public class MemberController {
      * @return
      */
     @PostMapping("/register")
-    public ResponseData register(@RequestBody String info) {
+    public ResponseData register(@RequestBody UserInfo info) {
         //取得注册用户的用户名和密码
-        JSONObject jsonObject = JSONObject.parseObject(info);
-        String username = jsonObject.getString("username");
-        String password = jsonObject.getString("password");
+        String username = info.getUsername();
+        String password = info.getPassword();
         //避免html
         username = HtmlUtils.htmlEscape(username);
         //检查用户名是否已经存在
         if (userInfoService.isValid(username)) {
             return new ResponseData(ExceptionMsg.UserNameUsed);
         }
-        memberService.registerMember(username,password);//注册会员的数据库操作
+        memberService.registerMember(username,password);//存入数据库
         return new ResponseData(ExceptionMsg.SUCCESS);
     }
     /**
-     * 会员登陆, DbRealm处理
+     * 登陆, DbRealm处理
      * @param info
      * @return
      */
     @PostMapping("/login")
-    public ResponseData login(@RequestBody String info) {
-        //TODO 封装成dto
-        JSONObject jsonObject = JSONObject.parseObject(info);
-        String username = jsonObject.getString("username");
-        String password = jsonObject.getString("password");
+    public ResponseData login(@RequestBody UserInfo info) {
+        String username = info.getUsername();
+        String password = info.getPassword();
         Subject subject = SecurityUtils.getSubject();
         String jwtToken = null;
         try {
@@ -97,7 +80,7 @@ public class MemberController {
      * @param frontMember
      * @return
      */
-    @PutMapping
+    @PutMapping("/member/update")
     public ResponseData updateMember(@RequestBody FrontMember frontMember){
         Member member = memberService.getMember(frontMember.getId());
         member.setAddress(frontMember.getAddress());
@@ -109,14 +92,15 @@ public class MemberController {
     }
 
     /**
-     * 会员上传头像
+     * 上传图片后,会员设置头像
      * @param frontMember 需要id和imageId
      * @return
      */
-    @PutMapping
+    @PutMapping("/member/uploadIcon")
     public ResponseData uploadIcon(@RequestBody FrontMember frontMember){
         Member member = memberService.getMember(frontMember.getId());
-        frontMember.setImageId(frontMember.getImageId());
+        member.setImageId(frontMember.getImageId());
+        memberService.saveMember(member);
         return new ResponseData(ExceptionMsg.SUCCESS);
     }
 }

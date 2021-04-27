@@ -4,10 +4,8 @@ package com.planeter.w2auction.controller;
 import com.planeter.w2auction.common.result.ExceptionMsg;
 import com.planeter.w2auction.common.result.ResponseData;
 
-import com.planeter.w2auction.service.UserInfoService;
+import com.planeter.w2auction.service.UserService;
 import org.apache.shiro.SecurityUtils;
-
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 
 import org.springframework.web.bind.annotation.*;
 
@@ -15,11 +13,11 @@ import javax.annotation.Resource;
 
 @RestController
 /**
- * 会员,管理员的登入和登出
+ * 会员,管理员的登出
  */
 public class UserInfoController {
     @Resource
-    UserInfoService userInfoService;
+    UserService userInfoService;
 
     /**
      * 登出
@@ -36,9 +34,8 @@ public class UserInfoController {
      * @return
      */
     @DeleteMapping("admin/deleteUser")
-    @RequiresPermissions("user:delete")
     public ResponseData deleteUserInfo(Integer id) {
-        userInfoService.deleteUserInfo(id);
+        userInfoService.deleteUser(id);
         return new ResponseData(ExceptionMsg.SUCCESS);
     }
 }

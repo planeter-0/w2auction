@@ -3,7 +3,7 @@ package com.planeter.w2auction.service.impl;
 import com.planeter.w2auction.common.utils.JwtUtils;
 import com.planeter.w2auction.dao.UserInfoDao;
 import com.planeter.w2auction.entity.*;
-import com.planeter.w2auction.service.UserInfoService;
+import com.planeter.w2auction.service.UserService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -11,13 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class UserInfoServiceImpl implements UserInfoService {
+public class UserInfoServiceImpl implements UserService {
 
     @Resource
     UserInfoDao userInfoDao;
 
     @Override
-    public UserInfo findByUsername(String username) {
+    public User findByUsername(String username) {
         return userInfoDao.findByUsername(username);
     }
 
@@ -27,7 +27,7 @@ public class UserInfoServiceImpl implements UserInfoService {
     }
 
     @Override
-    public UserInfo createUserInfo(UserInfo userInfo) {
+    public User registerUser(User userInfo) {
         return userInfoDao.save(userInfo);
     }
 
@@ -43,13 +43,13 @@ public class UserInfoServiceImpl implements UserInfoService {
          */
         return JwtUtils.sign(username, salt, 3600); //生成jwt token，设置过期时间为1小时
     }
-    public UserInfo getJwtUserInfo(String username) {
+    public User getJwtUserInfo(String username) {
         String salt = "12345";
         /**
          * @todo 从数据库或者缓存中取出jwt token生成时用的salt
          * salt = redisTemplate.opsForValue().get("token:"+username);
          */
-        UserInfo userInfo = findByUsername(username);
+        User userInfo = findByUsername(username);
         userInfo.setSalt(salt);
         return userInfo;
     }
@@ -57,9 +57,9 @@ public class UserInfoServiceImpl implements UserInfoService {
 
     @Override
     public List<String> getRolesByUsername(String username) {
-        List<SysRole> roleList = userInfoDao.findByUsername(username).getRoles();
+        List<Role> roleList = userInfoDao.findByUsername(username).getRoles();
         List<String> ret = new ArrayList<>();
-        for (SysRole role : roleList) {
+        for (Role role : roleList) {
             ret.add(role.getName());
         }
         return ret;
@@ -68,13 +68,13 @@ public class UserInfoServiceImpl implements UserInfoService {
     @Override
     public List<String> getPermissionsByUsername(String username) {
         // 获取角色权限
-        UserInfo userInfo = userInfoDao.findByUsername(username);
-        List<SysPermission> rolePermissions = new ArrayList<>();
+        User userInfo = userInfoDao.findByUsername(username);
+        List<Permission> rolePermissions = new ArrayList<>();
         List<String> stringPermissions = new ArrayList<>();//字符串权限列表
-        for (SysRole role : userInfo.getRoles()) {
+        for (Role role : userInfo.getRoles()) {
             rolePermissions.addAll(role.getPermissions());
         }
-        for (SysPermission permission : rolePermissions) {
+        for (Permission permission : rolePermissions) {
             stringPermissions.add(permission.getName()); //角色权限
         }
         //获取Member的实例级权限
@@ -90,17 +90,17 @@ public class UserInfoServiceImpl implements UserInfoService {
                 stringPermissions.add(itemDelete + item.getId());
             }
             // 加入order权限
-            List<Order> orders = member.getBuyerOrders();
-            orders.addAll(member.getSellerOrders());
-            for (Order order : orders) {
-                stringPermissions.add(orderView + order.getId());
-            }
+//            List<Order> orders = member.getBuyerOrders();
+//            orders.addAll(member.getSellerOrders());
+//            for (Order order : orders) {
+//                stringPermissions.add(orderView + order.getId());
+//            }
         }
         return stringPermissions;
     }
 
     @Override
-    public void deleteUserInfo(Integer id) {
+    public void deleteUser(Integer id) {
         userInfoDao.deleteById(id.longValue());
     }
 }

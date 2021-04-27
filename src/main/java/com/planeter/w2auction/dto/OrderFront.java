@@ -1,16 +1,17 @@
-package com.planeter.w2auction.entity;
+package com.planeter.w2auction.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
-import javax.persistence.*;
 import java.util.Date;
 
+/**
+ * @author Planeter
+ * @description
+ * @date 2021/4/27 14:54
+ * @status dev
+ */
 @Data
-@Entity
-public class Order {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class OrderFront {
     private Long id;
 
     private String address;

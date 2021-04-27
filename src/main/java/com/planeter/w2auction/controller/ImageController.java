@@ -1,6 +1,5 @@
 package com.planeter.w2auction.controller;
 
-import com.planeter.w2auction.common.exception.UploadException;
 import com.planeter.w2auction.common.result.ExceptionMsg;
 import com.planeter.w2auction.common.result.ResponseData;
 import com.planeter.w2auction.common.utils.QiniuUtils;
@@ -14,11 +13,15 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
-
+/**
+ * @description: TODO
+ * @author Planeter
+ * @date 2021/4/27 10:41
+ * @status ok
+ */
 @RestController
 public class ImageController {
     ImageDao imageDao;
-
     /**
      * 上传图片
      *
@@ -41,7 +44,7 @@ public class ImageController {
             //上传至七牛云服务器
             String url = QiniuUtils.upload(filepath, filename);
             if (url.contains("error")) {
-                throw new UploadException("上传失败");
+                return new ResponseData(ExceptionMsg.UploadFailed);
             }
             // 删除业务服务器文件
             if (file.isFile() && file.exists()) {
@@ -49,10 +52,11 @@ public class ImageController {
             }
             //保存到数据库
             i = imageDao.save(new Image(url, type));
-        } catch (UploadException | IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
-        return new ResponseData(ExceptionMsg.SUCCESS, i.getId().toString());
+        assert i != null;
+        return new ResponseData(ExceptionMsg.SUCCESS, i.getId());
     }
 
     /**
@@ -61,9 +65,9 @@ public class ImageController {
      * @param imageId 图片id
      * @return 图片url
      */
-    @GetMapping(value = "/image/view/{imageId}")
-    public String view(@PathVariable Integer imageId) {
-        Image image = imageDao.getOne(imageId.longValue());
-        return "redirect:/" + image.getUrl();
+    @GetMapping(value = "/image/{imageId}")
+    public String view(@PathVariable Long imageId) {
+        Image image = imageDao.getOne(imageId);
+        return image.getUrl();
     }
 }

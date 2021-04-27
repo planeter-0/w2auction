@@ -1,8 +1,8 @@
 package com.planeter.w2auction.shiro.filter;
 
 import com.planeter.w2auction.common.utils.JwtUtils;
-import com.planeter.w2auction.entity.UserInfo;
-import com.planeter.w2auction.service.UserInfoService;
+import com.planeter.w2auction.entity.User;
+import com.planeter.w2auction.service.UserService;
 import com.planeter.w2auction.shiro.JWTToken;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -25,7 +25,7 @@ import java.util.Date;
 @Slf4j
 public class JwtAuthFilter extends AuthenticatingFilter {
     @Resource
-    UserInfoService userInfoService;
+    UserService userInfoService;
     // token更新时间
     private static final int tokenRefreshInterval = 3000;
 
@@ -88,7 +88,7 @@ public class JwtAuthFilter extends AuthenticatingFilter {
         String newToken = null;
         if (token instanceof JWTToken) {
             JWTToken jwtToken = (JWTToken) token;
-            UserInfo userInfo = (UserInfo) subject.getPrincipal();
+            User userInfo = (User) subject.getPrincipal();
             //
             if (shouldTokenRefresh(JwtUtils.getIssuedAt(jwtToken.getToken()))) {
                 newToken = userInfoService.generateJwtToken(userInfo.getUsername());

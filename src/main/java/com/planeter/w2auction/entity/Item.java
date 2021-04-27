@@ -7,7 +7,6 @@ import org.springframework.data.annotation.CreatedDate;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 @Data
 @Entity
@@ -15,7 +14,7 @@ import java.util.List;
 public class Item implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     private String name;
 
@@ -25,27 +24,30 @@ public class Item implements Serializable {
     @CreatedDate
     private Date created;
 
-    @JsonIgnoreProperties(value = {"items"})
-    @ManyToOne
-    @JoinColumn(name = "member_id", referencedColumnName = "id")
-    private Member member;
+    private String username;
 
-    @JsonIgnoreProperties(value = {"items"})
-    @ManyToMany(cascade = CascadeType.PERSIST)
-    @JoinTable(name = "item_tag",
-            joinColumns = {@JoinColumn(name = "item_id")},
-            inverseJoinColumns = {@JoinColumn(name = "tag_id")})
-    private List<Item> tags;
+    private String tags;//解析
 
     private boolean verified;
 
-    @Column(name ="is_sold")
     private boolean isSold;
 
-//    @ManyToOne
-//    @JoinColumn(name = "tag_id",referencedColumnName = "id")
-//    private Tag tagId;
+    public Item(Long id, String name, Double price, String detail, Date created, String username, String tags, boolean verified, boolean isSold, String imageIds) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.detail = detail;
+        this.created = created;
+        this.username = username;
+        this.tags = tags;
+        this.verified = verified;
+        this.isSold = isSold;
+        this.imageIds = imageIds;
+    }
 
-    @Column(name = "image_id")
-    private Integer imageId;
+    private String imageIds;//解析
+
+    public Item() {
+
+    }
 }

@@ -1,24 +1,55 @@
 package com.planeter.w2auction.service.impl;
 
+import com.planeter.w2auction.common.utils.DtoUtils;
+import com.planeter.w2auction.dao.OrderDao;
+import com.planeter.w2auction.dto.ItemFront;
+import com.planeter.w2auction.dto.OrderFront;
+import com.planeter.w2auction.entity.Item;
 import com.planeter.w2auction.entity.Order;
 import com.planeter.w2auction.service.OrderService;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
+/**
+ * @description: TODO
+ * @author Planeter
+ * @date 2021/4/28 16:29
+ * @status dev
+ */
 @Service
 public class OrderServiceImp implements OrderService {
+    @Resource
+    OrderDao orderDao;
+    @Resource
+    DtoUtils dtoUtils;
     @Override
-    public void creatOrder(OrderDto orderDto) {
-        Order order = new Order();
+    //v
+    public void creatOrder(OrderFront order) {
+        orderDao.save(DtoUtils.toOrder(order));
     }
-
+    //v
     @Override
-    public List<OrderDto> getMine(Long memberId) {
-        return null;
+    public List<OrderFront> getMine(Long buyerId) {
+        List<OrderFront> fronts = new ArrayList<>();
+        for(Order o:orderDao.findOrdersByBuyerId(buyerId)){
+            fronts.add(dtoUtils.toOrderFront(o));
+        }
+        return fronts;
     }
-
+    //v
     @Override
-    public Order getOrder(Long orderId) {
-        return null;
+    public OrderFront getOrder(Long orderId) {
+        return dtoUtils.toOrderFront(orderDao.getOne(orderId));
+    }
+    //v
+    @Override
+    public List<OrderFront> viewAll() {
+        List<OrderFront> list = new ArrayList<>();
+        for(Order o:orderDao.findAll()){
+            list.add(dtoUtils.toOrderFront(o));
+        }
+        return list;
     }
 }

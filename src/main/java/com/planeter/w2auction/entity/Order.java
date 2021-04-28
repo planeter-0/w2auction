@@ -24,4 +24,14 @@ public class Order {
     private Long buyerId;
 
     private boolean complete;
+
+    public Order(Long id, String address, Date deliverTime, String phone, Long itemId, Long buyerId, boolean complete) {
+        this.id = id;
+        this.address = address;
+        this.deliverTime = deliverTime;
+        this.phone = phone;
+        this.itemId = itemId;
+        this.buyerId = buyerId;
+        this.complete = complete;
+    }
 }

@@ -1,19 +1,30 @@
 package com.planeter.w2auction.common.utils;
 
+import com.planeter.w2auction.dao.ItemDao;
+import com.planeter.w2auction.dao.OrderDao;
 import com.planeter.w2auction.dto.ItemFront;
+import com.planeter.w2auction.dto.OrderFront;
 import com.planeter.w2auction.entity.Item;
+import com.planeter.w2auction.entity.Order;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 /**
  * @author Planeter
- * @description jpa表关系炸了,jpql select不到,手动new dto TODO mybatis
+ * @description jpa多表复杂关系难以维护,jpql new dto循环查找,
+ *              故工具类手动转换 dto
+ *              TODO 整合mybatis-plus,直接映射为dto
  * @date 2021/4/27 13:02
  * @status dev
  */
+@Component
 public class DtoUtils {
+    @Resource
+    ItemDao itemDao;
     public static ItemFront toItemFront(Item item){
         return new ItemFront(item.getId(),
                 item.getName(),
@@ -38,6 +49,26 @@ public class DtoUtils {
                 item.isSold(),
                 longListParser((item.getImageIds())));
     }
+    public OrderFront toOrderFront(Order order){
+        return new OrderFront(order.getId(),
+                order.getAddress(),
+                order.getDeliverTime(),
+                order.getPhone(),
+                toItemFront(itemDao.getOne(order.getItemId())),
+                order.getBuyerId(),
+                order.isComplete());
+    }
+    public static Order toOrder(OrderFront front){
+        return new Order(front.getId(),
+                front.getAddress(),
+                front.getDeliverTime(),
+                front.getPhone(),
+                front.getItem().getId(),
+                front.getBuyerId(),
+                front.isComplete()
+                );
+        }
+
     public static List<Long> longParser(String s){
         List<Long> ret = new ArrayList<>();
 

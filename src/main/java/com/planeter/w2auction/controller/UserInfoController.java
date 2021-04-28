@@ -16,26 +16,5 @@ import javax.annotation.Resource;
  * 会员,管理员的登出
  */
 public class UserInfoController {
-    @Resource
-    UserService userInfoService;
 
-    /**
-     * 登出
-     * @return
-     */
-    @PutMapping("/logout")
-    public ResponseData logout() {
-        SecurityUtils.getSubject().logout();
-        return new ResponseData(ExceptionMsg.SUCCESS,"已登出");
-    }
-
-    /**
-     * 删除用户
-     * @return
-     */
-    @DeleteMapping("admin/deleteUser")
-    public ResponseData deleteUserInfo(Integer id) {
-        userInfoService.deleteUser(id);
-        return new ResponseData(ExceptionMsg.SUCCESS);
-    }
 }

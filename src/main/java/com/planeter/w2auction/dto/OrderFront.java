@@ -1,5 +1,6 @@
 package com.planeter.w2auction.dto;
 
+import com.planeter.w2auction.entity.Item;
 import lombok.Data;
 
 import java.util.Date;
@@ -20,9 +21,19 @@ public class OrderFront {
 
     private String phone;
 
-    private Long itemId;
+    private ItemFront item;
 
     private Long buyerId;
 
     private boolean complete;
+
+    public OrderFront(Long id, String address, Date deliverTime, String phone, ItemFront item, Long buyerId, boolean complete) {
+        this.id = id;
+        this.address = address;
+        this.deliverTime = deliverTime;
+        this.phone = phone;
+        this.item = item;
+        this.buyerId = buyerId;
+        this.complete = complete;
+    }
 }

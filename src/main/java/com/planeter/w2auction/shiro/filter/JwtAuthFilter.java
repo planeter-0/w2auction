@@ -26,7 +26,7 @@ import java.util.Date;
 public class JwtAuthFilter extends AuthenticatingFilter {
     @Resource
     UserService userInfoService;
-    // token更新时间
+    // token更新时间.单位秒
     private static final int tokenRefreshInterval = 3000;
 
     /**
@@ -45,63 +45,60 @@ public class JwtAuthFilter extends AuthenticatingFilter {
         } catch (Exception e) {
             log.error("Error occurs when login", e);
         }
-        //不通过时还会调用了isPermissive()方法
+        //不通过调用了isPermissive()方法,检查是否是宽容的url过滤器链映射
         return allowed || super.isPermissive(mappedValue);
     }
 
-    /**
-     * 这里重写了父类的方法，使用我们自己定义的Token类，提交给shiro。
-     * 这个方法返回null的话会直接抛出异常，进入isAccessAllowed（）的异常处理逻辑。
-     */
     @Override
     protected AuthenticationToken createToken(ServletRequest servletRequest, ServletResponse servletResponse) {
-        //从前端请求header"x-auth-token"获取token
-        String jwtToken = getAuthzHeader(servletRequest);
-        // 非空且不过期,token不变
+        //从header获取token value
+        HttpServletRequest httpRequest = WebUtils.toHttp(servletRequest);
+        String header = httpRequest.getHeader("x-auth-token");
+        String jwtToken = StringUtils.removeStart(header, "Bearer ");
+        // 非空且不过期,返回原token
         if (StringUtils.isNotBlank(jwtToken) && !JwtUtils.isTokenExpired(jwtToken))
             return new JWTToken(jwtToken);
         return null;//进入isAccessAllowed（）的异常处理逻辑
     }
 
     /**
-     * 如果这个Filter在之前isAccessAllowed（）方法中返回false,则会进入这个方法。
-     * 我们这里直接返回错误的response
+     * isAccessAllowed()返回false,返回错误响应
      */
     @Override
-    protected boolean onAccessDenied(ServletRequest servletRequest, ServletResponse servletResponse) throws Exception {
+    protected boolean onAccessDenied(ServletRequest servletRequest, ServletResponse servletResponse) {
         HttpServletResponse httpResponse = WebUtils.toHttp(servletResponse);
         httpResponse.setCharacterEncoding("UTF-8");
         httpResponse.setContentType("application/json;charset=UTF-8");
         httpResponse.setStatus(HttpStatus.SC_NON_AUTHORITATIVE_INFORMATION);
-        //Cors
+        //Cors头
         fillCorsHeader(WebUtils.toHttp(servletRequest), httpResponse);
         return false;
     }
-
     /**
-     * Shiro Login认证成功
-     * 若token过期更新token
+     * 认证成功
      */
     @Override
-    protected boolean onLoginSuccess(AuthenticationToken token, Subject subject, ServletRequest request, ServletResponse response) throws Exception {
+    protected boolean onLoginSuccess(AuthenticationToken token, Subject subject, ServletRequest request, ServletResponse response) {
         HttpServletResponse httpResponse = WebUtils.toHttp(response);
         String newToken = null;
         if (token instanceof JWTToken) {
             JWTToken jwtToken = (JWTToken) token;
-            User userInfo = (User) subject.getPrincipal();
-            //
-            if (shouldTokenRefresh(JwtUtils.getIssuedAt(jwtToken.getToken()))) {
-                newToken = userInfoService.generateJwtToken(userInfo.getUsername());
+            User user = (User) subject.getPrincipal();
+            //检查token过期,若过期生成新token
+            Date date = JwtUtils.getIssuedAt(jwtToken.getToken());
+            assert date != null;
+            if (shouldTokenRefresh(date)) {
+                newToken = userInfoService.generateJwtToken(user.getUsername());
             }
         }
-        // 设置token头
+        // token被加入响应头
         if (StringUtils.isNotBlank(newToken))
             httpResponse.setHeader("x-auth-token", newToken);
         return true;
     }
 
     /**
-     * 如果调用shiro的login认证失败，会回调这个方法，这里我们什么都不做，因为逻辑放到了onAccessDenied（）中。
+     * 认证失败，回调
      */
     @Override
     protected boolean onLoginFailure(AuthenticationToken token, AuthenticationException e, ServletRequest request, ServletResponse response) {
@@ -109,14 +106,8 @@ public class JwtAuthFilter extends AuthenticatingFilter {
         return false;
     }
 
-    protected String getAuthzHeader(ServletRequest request) {
-        HttpServletRequest httpRequest = WebUtils.toHttp(request);
-        String header = httpRequest.getHeader("x-auth-token");
-        return StringUtils.removeStart(header, "Bearer ");
-    }
-
     /**
-     * 比较 被检查时间 是否 晚于 (现在时间 - 更新秒数 )
+     * 比较 jwt生成时间 是否 晚于 (现在时间 - jwt有效时间 )
      */
     protected boolean shouldTokenRefresh(Date issueAt) {
         LocalDateTime issueTime = LocalDateTime.ofInstant(issueAt.toInstant(), ZoneId.systemDefault());

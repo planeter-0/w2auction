@@ -33,7 +33,7 @@ public class ShiroConfig {
 
     @Bean
     public FilterRegistrationBean<Filter> filterRegistrationBean(SecurityManager securityManager, UserService userService) throws Exception {
-        FilterRegistrationBean<Filter> filterRegistration = new FilterRegistrationBean<Filter>();
+        FilterRegistrationBean<Filter> filterRegistration = new FilterRegistrationBean<>();
         filterRegistration.setFilter((Filter) shiroFilter(securityManager, userService).getObject());
         filterRegistration.addInitParameter("targetFilterLifecycle", "true");
         filterRegistration.setAsyncSupported(true);
@@ -43,14 +43,20 @@ public class ShiroConfig {
         return filterRegistration;
     }
 
+    /**
+     * 双realm, 任意通过一个即认证
+     */
     @Bean
-    public Authenticator authenticator(UserService userService) {
+    public Authenticator authenticator() {
         ModularRealmAuthenticator authenticator = new ModularRealmAuthenticator();
         authenticator.setRealms(Arrays.asList(jwtShiroRealm(), dbShiroRealm()));
         authenticator.setAuthenticationStrategy(new FirstSuccessfulStrategy());
         return authenticator;
     }
 
+    /**
+     * 禁用session
+     */
     @Bean
     protected SessionStorageEvaluator sessionStorageEvaluator() {
         DefaultWebSessionStorageEvaluator sessionStorageEvaluator = new DefaultWebSessionStorageEvaluator();
@@ -60,54 +66,43 @@ public class ShiroConfig {
 
     @Bean("dbRealm")
     public Realm dbShiroRealm() {
-        DbShiroRealm myShiroRealm = new DbShiroRealm();
-        return myShiroRealm;
+        return new DbShiroRealm();
     }
 
     @Bean("jwtRealm")
     public Realm jwtShiroRealm() {
-        JWTShiroRealm myShiroRealm = new JWTShiroRealm();
-        return myShiroRealm;
+        return new JWTShiroRealm();
     }
 
     /**
-     * 设置过滤器
+     * 加入自定义jwt过滤器
      */
     @Bean("shiroFilter")
     public ShiroFilterFactoryBean shiroFilter(SecurityManager securityManager, UserService userService) {
         ShiroFilterFactoryBean factoryBean = new ShiroFilterFactoryBean();
         factoryBean.setSecurityManager(securityManager);
         Map<String, Filter> filterMap = factoryBean.getFilters();
-        //Jwt认证过滤
-        filterMap.put("jwt", createAuthFilter());
-        //TODO aop角色权限
+        filterMap.put("jwt", new JwtAuthFilter());
         factoryBean.setFilters(filterMap);
         factoryBean.setFilterChainDefinitionMap(shiroFilterChainDefinition().getFilterChainMap());
         return factoryBean;
     }
 
     /**
-     * url过滤器链
-     *
-     * @return
+     * url过滤器链,负责authenticate
+     * 注解和服务类方法内负责authorize
      */
     @Bean
     protected ShiroFilterChainDefinition shiroFilterChainDefinition() {
-        //TODO aop做鉴权
         DefaultShiroFilterChainDefinition c = new DefaultShiroFilterChainDefinition();
         //无需认证
+        c.addPathDefinition("/register", "noSessionCreation,anon");
         c.addPathDefinition("/login", "noSessionCreation,anon");
-        c.addPathDefinition("/logout", "noSessionCreation,anon");//token宽容
-        c.addPathDefinition("/index", "noSessionCreation,anon");
+        c.addPathDefinition("/logout", "noSessionCreation,anon");
         //其他路径均需要jwt过滤器通过
         c.addPathDefinition("/**", "noSessionCreation,jwt");
         return c;
     }
-
-    protected JwtAuthFilter createAuthFilter() {
-        return new JwtAuthFilter();
-    }
-
     /**
      * setUsePrefix(false)用于解决一个奇怪的bug。在引入spring aop的情况下。
      * 在@Controller注解的类的方法中加入@RequiresRole等shiro注解，会导致该方法无法映射请求，

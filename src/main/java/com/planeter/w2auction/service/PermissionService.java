@@ -1,9 +1,10 @@
 package com.planeter.w2auction.service;
 
+import com.planeter.w2auction.entity.User;
+
 import java.util.List;
 
 public interface PermissionService {
-    /** 根据用户名获取细分权限 */
     /** 获取权限 */
-    public List<String> getPermissionsByUsername(String username);
+    List<String> getPermissionsByUsername(User user);
 }

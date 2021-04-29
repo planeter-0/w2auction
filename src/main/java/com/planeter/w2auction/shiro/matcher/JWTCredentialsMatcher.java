@@ -19,20 +19,17 @@ import java.io.UnsupportedEncodingException;
  */
 @Slf4j
 public class JWTCredentialsMatcher implements CredentialsMatcher {
-    /**
-     * Matcher中直接调用工具包中的verify方法即可
-     */
     @Override
     public boolean doCredentialsMatch(AuthenticationToken authenticationToken, AuthenticationInfo authenticationInfo) {
         String token = (String) authenticationToken.getCredentials();
         Object stored = authenticationInfo.getCredentials();
         String salt = stored.toString();
 
-        User userInfo = (User) authenticationInfo.getPrincipals().getPrimaryPrincipal();
+        User user = (User) authenticationInfo.getPrincipals().getPrimaryPrincipal();
         try {
-            // 使用HMAC256生成的token
+            // jwt verify
             JWTVerifier verifier = JWT.require(Algorithm.HMAC256(salt))
-                    .withClaim("username", userInfo.getUsername())
+                    .withClaim("username", user.getUsername())
                     .build();
             verifier.verify(token);
             return true;

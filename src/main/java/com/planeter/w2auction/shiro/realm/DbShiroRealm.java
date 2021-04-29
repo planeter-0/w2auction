@@ -1,6 +1,7 @@
 package com.planeter.w2auction.shiro.realm;
 
 import com.planeter.w2auction.entity.*;
+import com.planeter.w2auction.service.PermissionService;
 import com.planeter.w2auction.service.UserService;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
@@ -13,14 +14,19 @@ import org.apache.shiro.util.ByteSource;
 import javax.annotation.Resource;
 
 /**
- * 登录密码认证用的realm
+ * @author Planeter
+ * @description: 负责登录时认证和授权的realm
+ * @date 2021/4/29 19:21
+ * @status ok
  */
 public class DbShiroRealm extends AuthorizingRealm {
 
     @Resource
     UserService userService;
+    @Resource
+    PermissionService permissionService;
 
-    //设置凭证匹配器
+    //设置凭证匹配器,md5哈希
     public DbShiroRealm() {
         HashedCredentialsMatcher hashedCredentialsMatcher = new HashedCredentialsMatcher("md5");
         hashedCredentialsMatcher.setHashIterations(2);
@@ -38,35 +44,32 @@ public class DbShiroRealm extends AuthorizingRealm {
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
         String username = (String) authenticationToken.getPrincipal();//UsernameAndPasswordToken
-        // 从数据库中查找UserInfo信息
+        // 从数据库中查找user信息
         User user = userService.findByUsername(username);
         if (null == user)
             throw new AuthenticationException("用户不存在");
         //认证成功,返回认证info
         return new SimpleAuthenticationInfo(
-                user, //主体
+                user, //principal
                 user.getPassword(), //hashedCredential
                 ByteSource.Util.bytes(user.getSalt()), //salt
-                getName() // realmName```
+                getName() // realmName
         );
     }
 
     /**
      * 授权
-     *
-     * @param principalCollection 主体
-     * @return 权限信息
      */
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
-        User userInfo = (User) principalCollection.getPrimaryPrincipal();//主体
+        User user = (User) principalCollection.getPrimaryPrincipal();//主体
         SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
         //授予角色
-        for (Role role : userInfo.getRoles()) {
+        for (Role role : user.getRoles()) {
             simpleAuthorizationInfo.addRole(role.getName());
         }
         //授予权限
-        simpleAuthorizationInfo.addStringPermissions(userService.getPermissionsByUsername(userInfo.getUsername()));
+        simpleAuthorizationInfo.addStringPermissions(permissionService.getPermissionsByUsername(user));
         return simpleAuthorizationInfo;
     }
 }

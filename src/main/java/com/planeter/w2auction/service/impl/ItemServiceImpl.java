@@ -47,6 +47,12 @@ public class ItemServiceImpl implements ItemService {
     public void uploadItem(ItemFront upload) {
         itemDao.save(DtoUtils.toItem(upload));
     }
+
+    @Override
+    public void deleteItem(ItemFront front) {
+        itemDao.deleteById(front.getId());
+    }
+
     //v
     @Override
     public void verify(Long id, boolean verified) {

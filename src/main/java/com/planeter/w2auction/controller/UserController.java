@@ -1,12 +1,5 @@
 package com.planeter.w2auction.controller;
 
-/**
- * @author Planeter
- * @description
- * @date 2021/4/28 16:40
- * @status dev
- */
-
 import com.planeter.w2auction.common.result.ExceptionMsg;
 import com.planeter.w2auction.common.result.ResponseData;
 import com.planeter.w2auction.dto.UserFront;
@@ -23,6 +16,12 @@ import org.springframework.web.util.HtmlUtils;
 
 import javax.annotation.Resource;
 
+/**
+ * @description: user
+ * @author Planeter
+ * @date 2021/4/29 20:57
+ * @status dev
+ */
 @RestController
 public class UserController {
     @Resource
@@ -33,7 +32,8 @@ public class UserController {
      * @param info
      * @return
      */
-    @PostMapping("/register")
+
+@PostMapping("/register")
     public ResponseData register(@RequestBody UserInfo info) {
         //取得注册用户的用户名和密码
         String username = info.getUsername();
@@ -44,7 +44,7 @@ public class UserController {
         if (userService.isValid(username)) {
             return new ResponseData(ExceptionMsg.UserNameUsed);
         }
-        userService.register(username,password);//存入数据库
+        userService.register(username,password);//密码加盐存入数据库
         return new ResponseData(ExceptionMsg.SUCCESS);
     }
     /**
@@ -84,7 +84,7 @@ public class UserController {
         return new ResponseData(ExceptionMsg.SUCCESS,"已登出");
     }
     /**
-     * 会员更新信息
+     * 更新信息
      * @param front
      * @return
      */

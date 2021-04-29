@@ -14,6 +14,8 @@ public interface ItemService {
     Item getItem(Long itemId);
     /** 上传商品 */
     void uploadItem(ItemFront upload);
+    /** 删除未售出商品*/
+    void deleteItem(ItemFront front);
     /** 审核,不通过假删除 */
     void verify(Long id,boolean verified);
 }

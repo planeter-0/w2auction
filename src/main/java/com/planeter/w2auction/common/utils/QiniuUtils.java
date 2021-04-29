@@ -1,7 +1,6 @@
 package com.planeter.w2auction.common.utils;
 
 import com.google.gson.Gson;
-import com.planeter.w2auction.common.exception.UploadException;
 import com.qiniu.common.QiniuException;
 import com.qiniu.common.Zone;
 import com.qiniu.http.Response;
@@ -19,6 +18,12 @@ import java.io.FileInputStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.UUID;
+/**
+ * @description: 七牛云工具类
+ * @author Planeter
+ * @date 2021/4/29 20:53
+ * @status dev
+ */
 @Slf4j
 public class QiniuUtils {
     /**
@@ -60,7 +65,7 @@ public class QiniuUtils {
             try {
                 return r.bodyString();
             } catch (QiniuException ex) {
-                throw new UploadException(ex.toString());
+                throw new RuntimeException(ex.toString());
             }
         }
     }
@@ -92,7 +97,7 @@ public class QiniuUtils {
             try {
                 return r.bodyString();
             } catch (QiniuException e) {
-                throw new UploadException(e.toString());
+                throw new RuntimeException(e.toString());
             }
         }
     }

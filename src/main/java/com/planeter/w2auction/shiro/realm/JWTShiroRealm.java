@@ -13,6 +13,7 @@ import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
+import org.apache.shiro.util.ByteSource;
 
 import javax.annotation.Resource;
 /**
@@ -44,20 +45,20 @@ public class JWTShiroRealm extends AuthorizingRealm {
     }
 
     /**
-     * 更controller登录一样，也是获取用户的salt值，给到shiro，由shiro来调用matcher来做认证
+     * 和controller登录一样，获取用户的salt值，由
      */
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authToken) throws AuthenticationException {
         JWTToken jwtToken = (JWTToken) authToken;
         String token = jwtToken.getToken();
 
-        User userInfo = userInfoService.getJwtUserInfo(JwtUtils.getUsername(token));
-        if(userInfo == null)
+        User user = userInfoService.getJwtUser(JwtUtils.getUsername(token));
+        if(user == null)
             throw new AuthenticationException("token过期，请重新登录");
         SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(
-                userInfo.getUsername(),
-                userInfo.getSalt(), //jwt生成盐
-                "jwtRealm");
+                user, //principal
+                user.getSalt(), //credential
+                getName()); // realmName
         return authenticationInfo;
     }
 }

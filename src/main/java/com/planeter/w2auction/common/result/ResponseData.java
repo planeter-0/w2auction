@@ -1,6 +1,11 @@
 package com.planeter.w2auction.common.result;
 
-//带数据的响应
+/**
+ * @description: 有数据响应
+ * @author Planeter
+ * @date 2021/4/29 20:47
+ * @status ok
+ */
 public class ResponseData extends Response {
     private Object data;
 

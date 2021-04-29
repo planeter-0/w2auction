@@ -9,11 +9,16 @@ import org.apache.shiro.crypto.SecureRandomNumberGenerator;
 import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
 import java.util.Date;
-
+/**
+ * @description: JWT工具类
+ * @author Planeter
+ * @date 2021/4/29 20:48
+ * @status dev
+ */
 public class JwtUtils {
 
     /**
-     * @return token中包含的签发时间
+     * @return token的签发时间
      */
     public static Date getIssuedAt(String token) {
         try {
@@ -25,7 +30,6 @@ public class JwtUtils {
     }
 
     /**
-     * 获得token中的信息无需secret解密也能获得
      * @return token中包含的用户名
      */
     public static String getUsername(String token) {
@@ -40,14 +44,14 @@ public class JwtUtils {
     /**
      * 生成签名,expireTime后过期
      * @param username 用户名
-     * @param time 过期时间s
-     * @return 加密的token
+     * @param time 过期时间(秒)
+     * @return 加密token
      */
     public static String sign(String username, String salt, long time) {
         try {
             Date date = new Date(System.currentTimeMillis()+time*1000);
             Algorithm algorithm = Algorithm.HMAC256(salt);
-            // 附带username信息
+            // username+date
             return JWT.create()
                     .withClaim("username", username)
                     .withExpiresAt(date)
@@ -59,8 +63,7 @@ public class JwtUtils {
     }
 
     /**
-     * token是否过期
-     * @return true：过期
+     * @return token是否过期
      */
     public static boolean isTokenExpired(String token) {
         Date now = Calendar.getInstance().getTime();
@@ -70,8 +73,8 @@ public class JwtUtils {
 
     /**
      * 生成随机盐,长度32位
-     * @return
      */
+    //todo 使用该方法
     public static String generateSalt(){
         return new SecureRandomNumberGenerator().nextBytes(16).toHex();
     }

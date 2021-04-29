@@ -22,6 +22,7 @@ public class UserServiceImpl implements UserService {
     RoleDao roleDao;
     @Resource
     MessageService messageService;
+
     @Override
     public boolean isValid(String username) {
         return userDao.existsByUsername(username);
@@ -40,7 +41,7 @@ public class UserServiceImpl implements UserService {
             user = new User(username, encodedPassword, salt, 1, roles);
             //写入数据库
             userDao.save(user);//插入
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return user;
@@ -49,7 +50,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void delete(String username) {
         userDao.deleteByUsername(username);
-        messageService.push(new Message("Your account have been delete",username));
+        messageService.push(new Message("Your account have been delete", username));
     }
 
     @Override
@@ -64,27 +65,31 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String generateJwtToken(String username) {
-                //TODO 随机生成盐
+        //TODO 随机生成盐
         String salt = "12345";//JwtUtils.generateSalt();
-        /**
-         * @todo 将salt保存到数据库或者缓存中
-         * redisTemplate.opsForValue().set("token:"+username, salt, 3600, TimeUnit.SECONDS);
-         */
+         // @todo 将salt保存到数据库或者缓存中
+         //redisTemplate.opsForValue().set("token:"+username, salt, 3600, TimeUnit.SECONDS);
+
         return JwtUtils.sign(username, salt, 3600); //生成jwt token，设置过期时间为1小时
     }
 
     @Override
-    public User getJwtUserInfo(String username) {
+    public User getJwtUser(String username) {
+        //主要是获取这个盐,本来该在redis里
         String salt = "12345";
-        /**
-         * @todo 从数据库或者缓存中取出jwt token生成时用的salt
+        /*
+         * TODO 从数据库或者缓存中取出jwt token生成时用的salt
          * salt = redisTemplate.opsForValue().get("token:"+username);
          */
-        User userInfo = findByUsername(username);
-        userInfo.setSalt(salt);
-        return userInfo;
+        User user = findByUsername(username);
+        user.setSalt(salt);
+        return user;
     }
 
+    @Override
+    public boolean isAdminUser(String username) {
+        return userDao.findByUsername(username).getRoles().contains(roleDao.findByName("admin"));
+    }
 
 
 //

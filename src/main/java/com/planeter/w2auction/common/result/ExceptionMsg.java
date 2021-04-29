@@ -1,6 +1,11 @@
 
 package com.planeter.w2auction.common.result;
-//异常信息的枚举类
+/**
+ * @description: 异常信息的枚举类
+ * @author Planeter
+ * @date 2021/4/29 20:48
+ * @status dev
+ */
 public enum ExceptionMsg {
 	SUCCESS("000200", "操作成功"),
 	FAILED("000999","操作失败"),

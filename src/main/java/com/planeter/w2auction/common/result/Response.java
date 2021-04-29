@@ -1,6 +1,11 @@
 package com.planeter.w2auction.common.result;
 
-//无数据响应
+/**
+ * @description: 无数据响应
+ * @author Planeter
+ * @date 2021/4/29 20:48
+ * @status dev
+ */
 public class Response {
 	/** 返回信息码*/
 	private String rspCode="000000";

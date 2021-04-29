@@ -1,7 +1,6 @@
 package com.planeter.w2auction.common.utils;
 
 import com.planeter.w2auction.dao.ItemDao;
-import com.planeter.w2auction.dao.OrderDao;
 import com.planeter.w2auction.dto.ItemFront;
 import com.planeter.w2auction.dto.OrderFront;
 import com.planeter.w2auction.entity.Item;
@@ -15,8 +14,8 @@ import java.util.List;
 
 /**
  * @author Planeter
- * @description jpa多表复杂关系难以维护,jpql new dto循环查找,
- *              故工具类手动转换 dto
+ * @description jpa多表复杂关系难以维护,jpql @query(new dto)与 dao耦合,
+ *              暂且使用工具类手动转换 dto
  *              TODO 整合mybatis-plus,直接映射为dto
  * @date 2021/4/27 13:02
  * @status dev

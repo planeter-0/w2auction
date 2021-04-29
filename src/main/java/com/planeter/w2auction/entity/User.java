@@ -25,7 +25,7 @@ public class User {
     //性别：0->未知；1->男；2->女")
     private Integer gender;
     private Long imageId;
-    @JsonIgnoreProperties
+    @JsonIgnoreProperties("roles")
     @ManyToMany
     @JoinTable(name = "user_role",
             joinColumns = {@JoinColumn(name = "user_id",referencedColumnName="id")},

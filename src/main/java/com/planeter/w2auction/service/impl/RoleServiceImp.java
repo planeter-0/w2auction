@@ -6,6 +6,7 @@ import com.planeter.w2auction.entity.Role;
 import com.planeter.w2auction.entity.User;
 import com.planeter.w2auction.service.RoleService;
 import org.apache.shiro.SecurityUtils;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import java.util.List;
  * @date 2021/4/29 9:28
  * @status dev
  */
+@Service
 public class RoleServiceImp implements RoleService {
     @Resource
     UserDao userDao;

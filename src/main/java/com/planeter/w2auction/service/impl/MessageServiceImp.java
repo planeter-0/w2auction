@@ -8,13 +8,13 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.List;
 
-@Service
 /**
  * @description: TODO
  * @author Planeter
  * @date 2021/4/27 14:49
  * @status dev
  */
+@Service
 public class MessageServiceImp implements MessageService {
     @Resource
     private MessageDao messageDao;

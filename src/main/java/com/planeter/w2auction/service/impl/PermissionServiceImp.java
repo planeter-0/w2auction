@@ -5,6 +5,7 @@ import com.planeter.w2auction.entity.Permission;
 import com.planeter.w2auction.entity.Role;
 import com.planeter.w2auction.entity.User;
 import com.planeter.w2auction.service.PermissionService;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import java.util.List;
  * @date 2021/4/29 19:29
  * @status dev
  */
+@Service
 public class PermissionServiceImp implements PermissionService {
     @Resource
     UserDao userDao;

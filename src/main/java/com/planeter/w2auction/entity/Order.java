@@ -1,6 +1,5 @@
 package com.planeter.w2auction.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -33,5 +32,9 @@ public class Order {
         this.itemId = itemId;
         this.buyerId = buyerId;
         this.complete = complete;
+    }
+
+    public Order() {
+
     }
 }

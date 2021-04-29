@@ -13,8 +13,10 @@ public class Role {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // 主键
     private String name; // 角色名称,如 admin/user
+    @JsonIgnoreProperties("users")
     @ManyToMany
     private List<User> users;
+    @JsonIgnoreProperties("permissions")
     @ManyToMany
     @JoinTable(name = "role_permission",
             joinColumns = {@JoinColumn(name = "role_id",referencedColumnName = "id")},

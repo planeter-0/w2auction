@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface OrderService {
     /** 下单 */
-    void creatOrder(OrderFront order);
+    void createOrder(OrderFront order);
     /** 查看自己全部订单 */
     List<OrderFront> getMine(Long userId);
     /** 获取订单 */

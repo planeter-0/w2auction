@@ -13,4 +13,6 @@ public class Role {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // 主键.
     private String name; // 角色名称,如 admin/user
+    @ManyToMany
+    private List<User> users;
 }

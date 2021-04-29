@@ -26,7 +26,7 @@ public class OrderServiceImp implements OrderService {
     DtoUtils dtoUtils;
     @Override
     //v
-    public void creatOrder(OrderFront order) {
+    public void createOrder(OrderFront order) {
         orderDao.save(DtoUtils.toOrder(order));
     }
     //v

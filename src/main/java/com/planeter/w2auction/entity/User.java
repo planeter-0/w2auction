@@ -25,4 +25,22 @@ public class User {
     //性别：0->未知；1->男；2->女")
     private Integer gender;
     private Long imageId;
+    @JsonIgnoreProperties
+    @ManyToMany
+    @JoinTable(name = "user_role",
+            joinColumns = {@JoinColumn(name = "user_id",referencedColumnName="id")},
+            inverseJoinColumns={@JoinColumn(name = "role_id",referencedColumnName="id")})
+    private List<Role> roles;
+
+    public User(String username, String password, String salt,Integer status,List<Role> roles) {
+        this.username = username;
+        this.password = password;
+        this.salt = salt;
+        this.status = status;
+        this.roles = roles;
+    }
+
+    public User() {
+
+    }
 }

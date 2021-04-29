@@ -29,10 +29,10 @@ public class OrderController {
         return new ResponseData(ExceptionMsg.SUCCESS, orderService.getMine(user.getId()));
     }
 
-    @PostMapping("/order/creat")
-    public ResponseData creat(@RequestBody OrderFront front) {
+    @PostMapping("/order/create")
+    public ResponseData create(@RequestBody OrderFront front) {
         User user = (User) SecurityUtils.getSubject().getPrincipal();
-        orderService.creatOrder(front);
+        orderService.createOrder(front);
         return new ResponseData(ExceptionMsg.SUCCESS);
     }
     @GetMapping("/order/{orderId}")

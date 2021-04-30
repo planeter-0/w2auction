@@ -38,13 +38,11 @@ public class UserController {
         //取得注册用户的用户名和密码
         String username = info.getUsername();
         String password = info.getPassword();
-        //避免html
-        username = HtmlUtils.htmlEscape(username);
         //检查学号是否已经存在
         if (userService.isValid(username)) {
             return new ResponseData(ExceptionMsg.UserNameUsed);
         }
-        userService.register(username,password);//密码加盐存入数据库
+        userService.register(username,password);//密码bcrypt加密存入数据库
         return new ResponseData(ExceptionMsg.SUCCESS);
     }
     /**
@@ -70,7 +68,7 @@ public class UserController {
             e.printStackTrace();
             return new ResponseData(ExceptionMsg.PasswordWrong);
         } catch (Exception e) {
-            e.printStackTrace();
+            return new ResponseData(ExceptionMsg.FAILED);
         }
         return new ResponseData(ExceptionMsg.SUCCESS,jwtToken);
     }

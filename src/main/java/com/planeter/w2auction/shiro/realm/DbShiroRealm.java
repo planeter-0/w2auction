@@ -3,6 +3,7 @@ package com.planeter.w2auction.shiro.realm;
 import com.planeter.w2auction.entity.*;
 import com.planeter.w2auction.service.PermissionService;
 import com.planeter.w2auction.service.UserService;
+import com.planeter.w2auction.shiro.matcher.BcryptCredentialsMatcher;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.authz.AuthorizationInfo;
@@ -26,11 +27,9 @@ public class DbShiroRealm extends AuthorizingRealm {
     @Resource
     PermissionService permissionService;
 
-    //设置凭证匹配器,md5哈希
+    //设置凭证匹配器Bcrypt
     public DbShiroRealm() {
-        HashedCredentialsMatcher hashedCredentialsMatcher = new HashedCredentialsMatcher("md5");
-        hashedCredentialsMatcher.setHashIterations(2);
-        this.setCredentialsMatcher(hashedCredentialsMatcher);
+        this.setCredentialsMatcher(new BcryptCredentialsMatcher());
     }
 
     @Override
@@ -52,7 +51,7 @@ public class DbShiroRealm extends AuthorizingRealm {
         return new SimpleAuthenticationInfo(
                 user, //principal
                 user.getPassword(), //hashedCredential
-                ByteSource.Util.bytes(user.getSalt()), //salt
+                ByteSource.Util.bytes(username), //salt
                 getName() // realmName
         );
     }

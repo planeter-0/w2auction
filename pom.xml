@@ -28,6 +28,12 @@
             <artifactId>java-jwt</artifactId>
             <version>3.2.0</version>
         </dependency>
+        <!-- BCrypt -->
+        <dependency>
+        <groupId>de.svenkubiak</groupId>
+        <artifactId>jBCrypt</artifactId>
+        <version>0.4.1</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
@@ -38,11 +44,6 @@
             <artifactId>spring-boot-starter-amqp</artifactId>
         </dependency>
         <!-- shiro -->
-<!--        <dependency>-->
-<!--            <groupId>org.apache.shiro</groupId>-->
-<!--            <artifactId>shiro-spring-boot-starter</artifactId>-->
-<!--            <version>1.5.3</version>-->
-<!--        </dependency>-->
         <dependency>
             <groupId>org.apache.shiro</groupId>
             <artifactId>shiro-spring-boot-web-starter</artifactId>

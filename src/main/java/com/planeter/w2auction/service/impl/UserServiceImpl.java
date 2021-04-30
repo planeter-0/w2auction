@@ -8,6 +8,7 @@ import com.planeter.w2auction.service.MessageService;
 import com.planeter.w2auction.service.UserService;
 import org.apache.shiro.crypto.SecureRandomNumberGenerator;
 import org.apache.shiro.crypto.hash.SimpleHash;
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -32,13 +33,12 @@ public class UserServiceImpl implements UserService {
     public User register(String username, String password) {
         User user = new User();
         try {
-            //md5加盐迭代两次，生成加密密码
-            String salt = new SecureRandomNumberGenerator().nextBytes().toString();
-            String encodedPassword = new SimpleHash("md5", password, salt, 2).toString();
+            //Bcrypt加密
+            String encodedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
             //创建user
             List<Role> roles = new ArrayList<>();
             roles.add(roleDao.findByName("user"));//
-            user = new User(username, encodedPassword, salt, 1, roles);
+            user = new User(username, encodedPassword, 1, roles);
             //写入数据库
             userDao.save(user);//插入
         } catch (Exception e) {

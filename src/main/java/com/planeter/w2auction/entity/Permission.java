@@ -6,7 +6,6 @@ import lombok.Data;
 import javax.persistence.*;
 import java.util.List;
 
-@Data
 @Entity
 public class Permission {
     @Id
@@ -15,5 +14,33 @@ public class Permission {
     private String name; // 权限名称,如 user:select,item:update:12
     @JsonIgnoreProperties("roles")
     @ManyToMany
+    @JoinTable(name = "role_permission",
+            joinColumns = {@JoinColumn(name = "role_id",referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "permission_id",referencedColumnName="id")}
+    )
     List<Role> roles;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public List<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
+    }
 }

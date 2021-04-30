@@ -1,5 +1,6 @@
 package com.planeter.w2auction.shiro;
 
+import com.planeter.w2auction.common.xss.XSSFilter;
 import com.planeter.w2auction.service.UserService;
 import com.planeter.w2auction.shiro.filter.JwtAuthFilter;
 import com.planeter.w2auction.shiro.realm.DbShiroRealm;
@@ -83,6 +84,7 @@ public class ShiroConfig {
         factoryBean.setSecurityManager(securityManager);
         Map<String, Filter> filterMap = factoryBean.getFilters();
         filterMap.put("jwt", new JwtAuthFilter());
+        filterMap.put("xss",new XSSFilter());
         factoryBean.setFilters(filterMap);
         factoryBean.setFilterChainDefinitionMap(shiroFilterChainDefinition().getFilterChainMap());
         return factoryBean;

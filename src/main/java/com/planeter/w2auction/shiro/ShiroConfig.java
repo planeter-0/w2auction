@@ -98,11 +98,11 @@ public class ShiroConfig {
     protected ShiroFilterChainDefinition shiroFilterChainDefinition() {
         DefaultShiroFilterChainDefinition c = new DefaultShiroFilterChainDefinition();
         //无需认证
-        c.addPathDefinition("/register", "anon");
-        c.addPathDefinition("/login", "anon");
-        c.addPathDefinition("/logout", "anon");
+        c.addPathDefinition("/register", "anon,xss,cors");
+        c.addPathDefinition("/login", "anon,xss,cors");
+        c.addPathDefinition("/logout", "anon,xss,cors");
         //其他路径均需要jwt过滤器通过
-        c.addPathDefinition("/**", "noSessionCreation,jwt");
+        c.addPathDefinition("/**", "noSessionCreation,jwt,xss,cors");
         return c;
     }
     /**

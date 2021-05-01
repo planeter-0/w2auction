@@ -2,12 +2,6 @@ server:
   port: 8088
 
 spring:
-  thymeleaf:
-    mode: HTML5
-    encoding: UTF-8
-    servlet:
-      content-type: text/html
-    cache: false
   redis:
     host: 127.0.0.1
     port: 6379

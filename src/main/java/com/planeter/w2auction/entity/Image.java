@@ -17,8 +17,7 @@ public class Image implements Serializable {
     private String url;
     // 0 -> 用户头像, 1 -> 商品图片
     private Integer type;
-    @CreatedDate
-    private Date upload;
+    private Date upload = new Date();
 
     public Image(String url, Integer type) {
         this.url = url;

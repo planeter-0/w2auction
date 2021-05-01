@@ -20,4 +20,6 @@ public interface UserService {
     User getJwtUser(String username);
     /** 是否是管理员用户 */
     boolean isAdminUser(String username);
+    /** 清理用户的jwt salt,无效化jwt */
+    void deleteJwtUser(String username);
 }

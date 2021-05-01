@@ -63,7 +63,7 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * 根据用户名+时间戳+盐生成JWTToken
+     * 根据用户名+时间戳+盐生成JWTToken,并存储
      */
     public String generateJwtToken(String username) {
         String salt = JwtUtils.generateSalt();
@@ -83,6 +83,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean isAdminUser(String username) {
         return userDao.findByUsername(username).getRoles().contains(roleDao.findByName("admin"));
+    }
+
+    @Override
+    public void deleteJwtUser(String username) {
+        userDao.updateSalt(username,JwtUtils.generateSalt());
     }
 
 }

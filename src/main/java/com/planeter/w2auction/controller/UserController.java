@@ -12,10 +12,13 @@ import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.HtmlUtils;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @description: user
@@ -52,7 +55,7 @@ public class UserController {
      * @return
      */
     @PostMapping("/login")
-    public ResponseData login(@RequestBody UserInfo info) {
+    public ResponseData login(@RequestBody UserInfo info, HttpServletResponse response) {
         String username = info.getUsername();
         String password = info.getPassword();
         Subject subject = SecurityUtils.getSubject();
@@ -60,8 +63,9 @@ public class UserController {
         try {
             //UsernamePasswordToken交给DbShiroRealm进行凭证匹配
             subject.login(new UsernamePasswordToken(username, password));
-            //生成JwtToken
+            //生成JwtToken并存储生成用的salt
             jwtToken = userService.generateJwtToken(username);
+            response.setHeader("x-auth-token",jwtToken);
         } catch (UnknownAccountException e) {
             e.printStackTrace();
             return new ResponseData(ExceptionMsg.UserNameWrong);
@@ -71,7 +75,7 @@ public class UserController {
         } catch (Exception e) {
             return new ResponseData(ExceptionMsg.FAILED);
         }
-        return new ResponseData(ExceptionMsg.SUCCESS,jwtToken);
+        return new ResponseData(ExceptionMsg.SUCCESS);
     }
     /**
      * 登出
@@ -79,6 +83,11 @@ public class UserController {
      */
     @PutMapping("/logout")
     public ResponseData logout() {
+        Subject subject = SecurityUtils.getSubject();
+        if(subject.getPrincipals() != null) {
+            User user = (User) subject.getPrincipals().getPrimaryPrincipal();
+            userService.deleteJwtUser(user.getUsername());
+        }
         SecurityUtils.getSubject().logout();
         return new ResponseData(ExceptionMsg.SUCCESS,"已登出");
     }

@@ -14,7 +14,6 @@ import java.io.IOException;
  * @status dev
  */
 @Slf4j
-@WebFilter(filterName = "xssFilter", urlPatterns = "/*", asyncSupported = true)
 public class XSSFilter implements Filter {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {

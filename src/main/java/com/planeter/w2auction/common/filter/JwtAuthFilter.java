@@ -1,4 +1,4 @@
-package com.planeter.w2auction.shiro.filter;
+package com.planeter.w2auction.common.filter;
 
 import com.planeter.w2auction.common.utils.JwtUtils;
 import com.planeter.w2auction.entity.User;
@@ -12,7 +12,9 @@ import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.authc.AuthenticatingFilter;
 import org.apache.shiro.web.util.WebUtils;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -22,12 +24,26 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 
+/**
+ * @description: TODO
+ * @author Planeter
+ * @date 2021/5/1 14:23
+ * @status dev
+ */
 @Slf4j
+@Component
 public class JwtAuthFilter extends AuthenticatingFilter {
     @Resource
-    UserService userInfoService;
+    UserService userService;
     // token更新时间.单位秒
-    private static final int tokenRefreshInterval = 3000;
+    private static final int tokenRefreshInterval = 30;
+
+    private static JwtAuthFilter jwtAuthFilter;
+
+    @PostConstruct
+    public void init() {
+        jwtAuthFilter = this;
+    }
 
     /**
      * 父第一个被调用的方法
@@ -45,8 +61,7 @@ public class JwtAuthFilter extends AuthenticatingFilter {
         } catch (Exception e) {
             log.error("Error occurs when login", e);
         }
-        //不通过调用了isPermissive()方法,检查是否是宽容的url过滤器链映射
-        return allowed || super.isPermissive(mappedValue);
+        return allowed;
     }
 
     @Override
@@ -70,10 +85,9 @@ public class JwtAuthFilter extends AuthenticatingFilter {
         httpResponse.setCharacterEncoding("UTF-8");
         httpResponse.setContentType("application/json;charset=UTF-8");
         httpResponse.setStatus(HttpStatus.SC_NON_AUTHORITATIVE_INFORMATION);
-        //Cors头
-        fillCorsHeader(WebUtils.toHttp(servletRequest), httpResponse);
         return false;
     }
+
     /**
      * 认证成功
      */
@@ -84,16 +98,17 @@ public class JwtAuthFilter extends AuthenticatingFilter {
         if (token instanceof JWTToken) {
             JWTToken jwtToken = (JWTToken) token;
             User user = (User) subject.getPrincipal();
-            //检查token过期,若过期生成新token
+            //检查token过期,若过期更新盐生成新token,因为盐的更新,过期token失效
             Date date = JwtUtils.getIssuedAt(jwtToken.getToken());
             assert date != null;
             if (shouldTokenRefresh(date)) {
-                newToken = userInfoService.generateJwtToken(user.getUsername());
+                newToken = jwtAuthFilter.userService.generateJwtToken(user.getUsername());
             }
         }
-        // token被加入响应头
+        // 新token被加入响应头
         if (StringUtils.isNotBlank(newToken))
             httpResponse.setHeader("x-auth-token", newToken);
+        response = WebUtils.getResponse(httpResponse);
         return true;
     }
 
@@ -114,9 +129,4 @@ public class JwtAuthFilter extends AuthenticatingFilter {
         return LocalDateTime.now().minusSeconds(tokenRefreshInterval).isAfter(issueTime);
     }
 
-    protected void fillCorsHeader(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        httpServletResponse.setHeader("Access-control-Allow-Origin", httpServletRequest.getHeader("Origin"));
-        httpServletResponse.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS,HEAD");
-        httpServletResponse.setHeader("Access-Control-Allow-Headers", httpServletRequest.getHeader("Access-Control-Request-Headers"));
-    }
 }

@@ -9,19 +9,24 @@ import org.apache.commons.io.FileUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
+import java.util.Optional;
+
 /**
- * @description: image
  * @author Planeter
+ * @description: image
  * @date 2021/4/27 10:41
  * @status ok
  */
 @RestController
 public class ImageController {
+    @Resource
     ImageDao imageDao;
+
     /**
      * 上传图片
      *
@@ -36,22 +41,22 @@ public class ImageController {
         Image i = null;
         // 转存文件
         try {
-            //上传至业务服务器
-            String filepath = request.getSession().getServletContext().getRealPath("/upload");
+            //重命名上传至业务服务器
+            String filepath = "E:\\uploadFiles\\";
             String filename = QiniuUtils.renamePic(Objects.requireNonNull(uploadFile.getOriginalFilename()));//UUID
             File file = new File(filepath, filename);
             FileUtils.copyInputStreamToFile(uploadFile.getInputStream(), file);
             //上传至七牛云服务器
-            String url = QiniuUtils.upload(filepath, filename);
+            String url = QiniuUtils.upload(filepath + filename, filename);
             if (url.contains("error")) {
                 return new ResponseData(ExceptionMsg.UploadFailed);
             }
             // 删除业务服务器文件
             if (file.isFile() && file.exists()) {
                 file.delete();
+                //保存到数据库
+                i = imageDao.save(new Image(url, type));
             }
-            //保存到数据库
-            i = imageDao.save(new Image(url, type));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -66,8 +71,10 @@ public class ImageController {
      * @return 图片url
      */
     @GetMapping(value = "/image/{imageId}")
-    public String view(@PathVariable Long imageId) {
-        Image image = imageDao.getOne(imageId);
-        return image.getUrl();
+    public ResponseData view(@PathVariable Long imageId) {
+        Optional<Image> image = imageDao.findById(imageId);
+        if (image.isPresent()) {
+            return new ResponseData(ExceptionMsg.SUCCESS,image.get().getUrl());
+        }else return new ResponseData(ExceptionMsg.FAILED);
     }
 }

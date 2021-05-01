@@ -22,7 +22,7 @@ public class XSSJacksonDeserializer extends JsonDeserializer<String> {
 
     @Override
     public String deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
-        return HtmlUtils.htmlEscape(jsonParser.getText());
+        return HtmlUtils.htmlUnescape(jsonParser.getText());
     }
 
 }

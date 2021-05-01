@@ -34,7 +34,7 @@ public class JWTCredentialsMatcher implements CredentialsMatcher {
             verifier.verify(token);
             return true;
         } catch (UnsupportedEncodingException | JWTVerificationException e) {
-            log.error("Token Error:{}", e.getMessage());
+            e.printStackTrace();
         }
         return false;
     }

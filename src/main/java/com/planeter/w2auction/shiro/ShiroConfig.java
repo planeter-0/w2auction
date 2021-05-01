@@ -2,18 +2,17 @@ package com.planeter.w2auction.shiro;
 
 import com.planeter.w2auction.common.xss.XSSFilter;
 import com.planeter.w2auction.service.UserService;
-import com.planeter.w2auction.shiro.filter.JwtAuthFilter;
+import com.planeter.w2auction.common.filter.CorsFilter;
+import com.planeter.w2auction.common.filter.JwtAuthFilter;
 import com.planeter.w2auction.shiro.realm.DbShiroRealm;
 import com.planeter.w2auction.shiro.realm.JWTShiroRealm;
 import org.apache.shiro.authc.Authenticator;
 import org.apache.shiro.authc.pam.FirstSuccessfulStrategy;
 import org.apache.shiro.authc.pam.ModularRealmAuthenticator;
-import org.apache.shiro.mgt.SessionStorageEvaluator;
 import org.apache.shiro.realm.Realm;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.spring.web.config.DefaultShiroFilterChainDefinition;
 import org.apache.shiro.spring.web.config.ShiroFilterChainDefinition;
-import org.apache.shiro.web.mgt.DefaultWebSessionStorageEvaluator;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -55,15 +54,15 @@ public class ShiroConfig {
         return authenticator;
     }
 
-    /**
-     * 禁用session
-     */
-    @Bean
-    protected SessionStorageEvaluator sessionStorageEvaluator() {
-        DefaultWebSessionStorageEvaluator sessionStorageEvaluator = new DefaultWebSessionStorageEvaluator();
-        sessionStorageEvaluator.setSessionStorageEnabled(false);
-        return sessionStorageEvaluator;
-    }
+//    /**
+//     * 禁用session
+//     */
+//    @Bean
+//    protected SessionStorageEvaluator sessionStorageEvaluator() {
+//        DefaultWebSessionStorageEvaluator sessionStorageEvaluator = new DefaultWebSessionStorageEvaluator();
+//        sessionStorageEvaluator.setSessionStorageEnabled(false);
+//        return sessionStorageEvaluator;
+//    }
 
     @Bean("dbRealm")
     public Realm dbShiroRealm() {
@@ -85,6 +84,7 @@ public class ShiroConfig {
         Map<String, Filter> filterMap = factoryBean.getFilters();
         filterMap.put("jwt", new JwtAuthFilter());
         filterMap.put("xss",new XSSFilter());
+        filterMap.put("cors",new CorsFilter());
         factoryBean.setFilters(filterMap);
         factoryBean.setFilterChainDefinitionMap(shiroFilterChainDefinition().getFilterChainMap());
         return factoryBean;
@@ -98,9 +98,9 @@ public class ShiroConfig {
     protected ShiroFilterChainDefinition shiroFilterChainDefinition() {
         DefaultShiroFilterChainDefinition c = new DefaultShiroFilterChainDefinition();
         //无需认证
-        c.addPathDefinition("/register", "noSessionCreation,anon");
-        c.addPathDefinition("/login", "noSessionCreation,anon");
-        c.addPathDefinition("/logout", "noSessionCreation,anon");
+        c.addPathDefinition("/register", "anon");
+        c.addPathDefinition("/login", "anon");
+        c.addPathDefinition("/logout", "anon");
         //其他路径均需要jwt过滤器通过
         c.addPathDefinition("/**", "noSessionCreation,jwt");
         return c;

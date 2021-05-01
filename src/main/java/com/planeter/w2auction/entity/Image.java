@@ -24,4 +24,8 @@ public class Image implements Serializable {
         this.url = url;
         this.type = type;
     }
+
+    public Image() {
+
+    }
 }

@@ -45,13 +45,12 @@ public class JWTShiroRealm extends AuthorizingRealm {
     }
 
     /**
-     * 和controller登录一样，获取用户的salt值，由
+     * 和controller登录一样，获取用户的salt值
      */
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authToken) throws AuthenticationException {
         JWTToken jwtToken = (JWTToken) authToken;
         String token = jwtToken.getToken();
-
         User user = userInfoService.getJwtUser(JwtUtils.getUsername(token));
         if(user == null)
             throw new AuthenticationException("token过期，请重新登录");

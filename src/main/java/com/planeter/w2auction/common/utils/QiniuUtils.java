@@ -30,8 +30,8 @@ public class QiniuUtils {
      * 生成上传凭证，然后准备上传
      */
     private static final String AK = "1H0ZQ2L-dMN2_0E090sRwD1VsTd1TQV1X8cTwWcC";
-    private static final String SK = "1H0ZQ2L-dMN2_0E090sRwD1VsTd1TQV1X8cTwWcC";
-    private static final String bucket = "auction";
+    private static final String SK = "qmfitv_YYiuP8vLiP-n9_kYKjIJoxDGYZ3A8ftdd";
+    private static final String bucket = "acution";
     public static final String origin="qrnf5hoyf.hn-bkt.clouddn.com";//七牛提供的外链域名, 一个月到期
     private static final Auth auth = Auth.create(AK, SK);
 
@@ -58,7 +58,7 @@ public class QiniuUtils {
             //解析上传成功的结果
             DefaultPutRet putRet = new Gson().fromJson(response.bodyString(), DefaultPutRet.class);
             //返回url
-            return origin+putRet.key;
+            return origin+'/'+putRet.key;
         }catch(QiniuException e){
             Response r = e.response;
             log.warn(r.toString());

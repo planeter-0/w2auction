@@ -2,6 +2,7 @@ package com.planeter.w2auction.controller;
 
 import com.planeter.w2auction.common.result.ExceptionMsg;
 import com.planeter.w2auction.common.result.ResponseData;
+import com.planeter.w2auction.common.utils.JwtUtils;
 import com.planeter.w2auction.dto.UserFront;
 import com.planeter.w2auction.dto.UserInfo;
 import com.planeter.w2auction.entity.User;
@@ -92,6 +93,7 @@ public class UserController {
         user.setNickname(front.getNickname());
         user.setGender(front.getGender());
         user.setImageId(front.getImageId());
+        userService.save(user);
         return new ResponseData(ExceptionMsg.SUCCESS);
     }
 }

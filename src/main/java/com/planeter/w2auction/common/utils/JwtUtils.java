@@ -4,18 +4,22 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.planeter.w2auction.dao.UserDao;
 import org.apache.shiro.crypto.SecureRandomNumberGenerator;
 
+import javax.annotation.Resource;
 import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
 import java.util.Date;
+
 /**
- * @description: JWT工具类
  * @author Planeter
+ * @description: JWT工具类
  * @date 2021/4/29 20:48
  * @status dev
  */
 public class JwtUtils {
+
 
     /**
      * @return token的签发时间
@@ -43,19 +47,20 @@ public class JwtUtils {
 
     /**
      * 生成签名,expireTime后过期
+     *
      * @param username 用户名
-     * @param time 过期时间(秒)
+     * @param time     过期时间(秒)
      * @return 加密token
      */
     public static String sign(String username, String salt, long time) {
         try {
-            Date date = new Date(System.currentTimeMillis()+time*1000);
+            Date date = new Date(System.currentTimeMillis() + time * 1000);
             Algorithm algorithm = Algorithm.HMAC256(salt);
             // username+date
             return JWT.create()
                     .withClaim("username", username)
-                    .withExpiresAt(date)
-                    .withIssuedAt(new Date())
+                    .withExpiresAt(date)//过期时间
+                    .withIssuedAt(new Date())//签发时间
                     .sign(algorithm);
         } catch (UnsupportedEncodingException e) {
             return null;
@@ -74,8 +79,7 @@ public class JwtUtils {
     /**
      * 生成随机盐,长度32位
      */
-    //todo 使用该方法
-    public static String generateSalt(){
+    public static String generateSalt() {
         return new SecureRandomNumberGenerator().nextBytes(16).toHex();
     }
 

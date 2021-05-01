@@ -23,7 +23,7 @@ public class User {
     @CreatedDate
     private Date createTime;//创建时间
     //性别：0->未知；1->男；2->女")
-    private Integer gender;
+    private Integer gender = 0;
     private Long imageId;
     @JsonIgnoreProperties("roles")
     @ManyToMany

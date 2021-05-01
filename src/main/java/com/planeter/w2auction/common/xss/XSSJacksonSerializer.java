@@ -21,7 +21,8 @@ public class XSSJacksonSerializer extends JsonSerializer<String> {
 
     @Override
     public void serialize(String s, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
-        jsonGenerator.writeString(HtmlUtils.htmlEscape(s));
+        String handledString = HtmlUtils.htmlEscape(s);
+        jsonGenerator.writeString(handledString);
     }
 
 }

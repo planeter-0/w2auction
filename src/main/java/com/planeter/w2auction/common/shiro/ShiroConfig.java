@@ -1,11 +1,11 @@
-package com.planeter.w2auction.shiro;
+package com.planeter.w2auction.common.shiro;
 
-import com.planeter.w2auction.common.xss.XSSFilter;
+import com.planeter.w2auction.common.filter.XSSFilter;
 import com.planeter.w2auction.service.UserService;
 import com.planeter.w2auction.common.filter.CorsFilter;
 import com.planeter.w2auction.common.filter.JwtAuthFilter;
-import com.planeter.w2auction.shiro.realm.DbShiroRealm;
-import com.planeter.w2auction.shiro.realm.JWTShiroRealm;
+import com.planeter.w2auction.common.shiro.realm.DbShiroRealm;
+import com.planeter.w2auction.common.shiro.realm.JWTShiroRealm;
 import org.apache.shiro.authc.Authenticator;
 import org.apache.shiro.authc.pam.FirstSuccessfulStrategy;
 import org.apache.shiro.authc.pam.ModularRealmAuthenticator;

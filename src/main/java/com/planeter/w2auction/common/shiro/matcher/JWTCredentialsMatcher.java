@@ -1,4 +1,4 @@
-package com.planeter.w2auction.shiro.matcher;
+package com.planeter.w2auction.common.shiro.matcher;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;

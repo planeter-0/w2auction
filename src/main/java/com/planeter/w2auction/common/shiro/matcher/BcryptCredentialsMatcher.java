@@ -1,17 +1,10 @@
-package com.planeter.w2auction.shiro.matcher;
+package com.planeter.w2auction.common.shiro.matcher;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.planeter.w2auction.entity.User;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authc.credential.CredentialsMatcher;
 import org.mindrot.jbcrypt.BCrypt;
-
-import java.io.UnsupportedEncodingException;
 
 /**
  * @author Planeter

@@ -1,10 +1,10 @@
-package com.planeter.w2auction.shiro.realm;
+package com.planeter.w2auction.common.shiro.realm;
 
 import com.planeter.w2auction.common.utils.JwtUtils;
 import com.planeter.w2auction.entity.User;
 import com.planeter.w2auction.service.UserService;
-import com.planeter.w2auction.shiro.matcher.JWTCredentialsMatcher;
-import com.planeter.w2auction.shiro.JWTToken;
+import com.planeter.w2auction.common.shiro.matcher.JWTCredentialsMatcher;
+import com.planeter.w2auction.common.shiro.JWTToken;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;

@@ -3,7 +3,7 @@ package com.planeter.w2auction.common.filter;
 import com.planeter.w2auction.common.utils.JwtUtils;
 import com.planeter.w2auction.entity.User;
 import com.planeter.w2auction.service.UserService;
-import com.planeter.w2auction.shiro.JWTToken;
+import com.planeter.w2auction.common.shiro.JWTToken;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;

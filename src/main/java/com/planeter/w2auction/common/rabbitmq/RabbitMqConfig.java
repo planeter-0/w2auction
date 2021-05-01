@@ -1,4 +1,4 @@
-package com.planeter.w2auction.rabbitmq;
+package com.planeter.w2auction.common.rabbitmq;
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;

@@ -1,11 +1,10 @@
-package com.planeter.w2auction.shiro.realm;
+package com.planeter.w2auction.common.shiro.realm;
 
 import com.planeter.w2auction.entity.*;
 import com.planeter.w2auction.service.PermissionService;
 import com.planeter.w2auction.service.UserService;
-import com.planeter.w2auction.shiro.matcher.BcryptCredentialsMatcher;
+import com.planeter.w2auction.common.shiro.matcher.BcryptCredentialsMatcher;
 import org.apache.shiro.authc.*;
-import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;

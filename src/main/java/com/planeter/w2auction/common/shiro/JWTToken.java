@@ -1,4 +1,4 @@
-package com.planeter.w2auction.shiro;
+package com.planeter.w2auction.common.shiro;
 
 import org.apache.shiro.authc.HostAuthenticationToken;
 

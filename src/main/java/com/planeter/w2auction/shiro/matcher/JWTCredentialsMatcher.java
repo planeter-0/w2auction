@@ -28,13 +28,14 @@ public class JWTCredentialsMatcher implements CredentialsMatcher {
         User user = (User) authenticationInfo.getPrincipals().getPrimaryPrincipal();
         try {
             // jwt verify
-            JWTVerifier verifier = JWT.require(Algorithm.HMAC256(salt))
+            Algorithm algorithm = Algorithm.HMAC256(salt);
+            JWTVerifier verifier = JWT.require(algorithm)
                     .withClaim("username", user.getUsername())
                     .build();
             verifier.verify(token);
             return true;
         } catch (UnsupportedEncodingException | JWTVerificationException e) {
-            e.printStackTrace();
+            log.warn("Signature resulted invalid");
         }
         return false;
     }

@@ -13,16 +13,11 @@ import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
-import org.apache.shiro.util.ByteSource;
 
 import javax.annotation.Resource;
-/**
- * 自定义身份认证
- * 基于HMAC（ 散列消息认证码）的控制域
- */
 public class JWTShiroRealm extends AuthorizingRealm {
     @Resource
-    UserService userInfoService;
+    UserService userService;
     // 设置Matcher
     public JWTShiroRealm(){
         this.setCredentialsMatcher(new JWTCredentialsMatcher());
@@ -51,7 +46,7 @@ public class JWTShiroRealm extends AuthorizingRealm {
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authToken) throws AuthenticationException {
         JWTToken jwtToken = (JWTToken) authToken;
         String token = jwtToken.getToken();
-        User user = userInfoService.getJwtUser(JwtUtils.getUsername(token));
+        User user = userService.getJwtUser(JwtUtils.getUsername(token));
         if(user == null)
             throw new AuthenticationException("token过期，请重新登录");
         SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(

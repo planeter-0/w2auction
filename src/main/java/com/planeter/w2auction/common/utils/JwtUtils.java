@@ -5,6 +5,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.planeter.w2auction.dao.UserDao;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.crypto.SecureRandomNumberGenerator;
 
 import javax.annotation.Resource;
@@ -18,6 +19,7 @@ import java.util.Date;
  * @date 2021/4/29 20:48
  * @status dev
  */
+@Slf4j
 public class JwtUtils {
 
 
@@ -72,8 +74,13 @@ public class JwtUtils {
      */
     public static boolean isTokenExpired(String token) {
         Date now = Calendar.getInstance().getTime();
-        DecodedJWT jwt = JWT.decode(token);
-        return jwt.getExpiresAt().before(now);
+        try {
+            DecodedJWT jwt = JWT.decode(token);
+            return jwt.getExpiresAt().before(now);
+        }catch(JWTDecodeException e){
+            log.warn("Token Decode Error:{}", token);
+        }
+        return true;
     }
 
     /**

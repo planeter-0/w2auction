@@ -70,17 +70,14 @@ public class UserServiceImpl implements UserService {
         userDao.updateSalt(username, salt);
         //TODO 将生成jwt用的salt存入缓存
         //redisTemplate.opsForValue().set("token:"+username, salt, 3000, TimeUnit.SECONDS);
-        return JwtUtils.sign(username, salt, 3000); //生成jwt token，设置过期时间为3000s
+        return JwtUtils.sign(username, salt, 3600); //生成jwt token，设置过期时间为3000s
     }
 
     @Override
     public User getJwtUser(String username) {
         //TODO 从缓存中取出jwt token生成时用的salt
         //salt = redisTemplate.opsForValue().get("token:"+username);
-        String salt = userDao.getSalt(username);
-        User user = findByUsername(username);
-        user.setSalt(salt);
-        return user;
+        return findByUsername(username);
     }
 
     @Override

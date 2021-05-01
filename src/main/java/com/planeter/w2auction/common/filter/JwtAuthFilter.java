@@ -36,7 +36,7 @@ public class JwtAuthFilter extends AuthenticatingFilter {
     @Resource
     UserService userService;
     // token更新时间.单位秒
-    private static final int tokenRefreshInterval = 30;
+    private static final int tokenRefreshInterval = 3000;
 
     private static JwtAuthFilter jwtAuthFilter;
 
@@ -57,7 +57,7 @@ public class JwtAuthFilter extends AuthenticatingFilter {
         try {
             allowed = executeLogin(request, response); //处理登录
         } catch (IllegalStateException e) { // not found any token
-            log.error("Not found any token");
+            log.warn("Invalid token");
         } catch (Exception e) {
             log.error("Error occurs when login", e);
         }

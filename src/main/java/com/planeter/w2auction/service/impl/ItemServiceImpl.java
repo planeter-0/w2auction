@@ -44,8 +44,8 @@ public class ItemServiceImpl implements ItemService {
 
     //v
     @Override
-    public void uploadItem(ItemFront upload) {
-        itemDao.save(DtoUtils.toItem(upload));
+    public Item uploadItem(ItemFront upload) {
+        return itemDao.save(DtoUtils.toItem(upload));
     }
 
     @Override

@@ -6,11 +6,13 @@ import com.planeter.w2auction.dto.ItemFront;
 import com.planeter.w2auction.entity.Item;
 import com.planeter.w2auction.service.ItemService;
 import com.planeter.w2auction.service.UserService;
+import com.planeter.w2auction.service.impl.EsItemService;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,27 +27,28 @@ public class ItemController {
     @Resource
     ItemService itemService;
     @Resource
+    EsItemService esItemService;
+    @Resource
     UserService userService;
 
     /**
-     * 关键字搜索
+     * 模糊搜索
      *
-     * @param key
-     * @return
+     * @param key 模糊词
+     * @return  List<Map<String, Object>>
      */
     @GetMapping("/item/search")
-    ResponseData getAllVerifiedItem(@RequestParam String key) {
+    ResponseData getAllVerifiedItem(@RequestParam String key) throws IOException {
         //TODO elasticsearch 使用key进行关键字搜索
-        return new ResponseData(ExceptionMsg.SUCCESS, itemService.search(key));
+        return new ResponseData(ExceptionMsg.SUCCESS, esItemService.search(key));
     }
 
 
-
     /**
-     * 获取某个物品的详细信息v
+     * 物品的详细信息
      *
-     * @param itemId
-     * @return
+     * @param itemId 物品id
+     * @return List<Object> 含Item和User
      */
     @GetMapping("/item/{itemId}")
     ResponseData getItems(@PathVariable Long itemId) {
@@ -58,16 +61,24 @@ public class ItemController {
     }
 
     /**
-     * 上传商品v
+     * 上传物品
      *
-     * @param uploadItem
+     * @param uploadItem 所上传的物品
      * @return
      */
     @PostMapping("/item/upload")
     ResponseData uploadItem(@RequestBody ItemFront uploadItem) {
-        itemService.uploadItem(uploadItem);
+        Item i = itemService.uploadItem(uploadItem);
+        uploadItem.setId(i.getId());
+        esItemService.add(uploadItem);
         return new ResponseData(ExceptionMsg.SUCCESS);
     }
+
+    /**
+     * 删除物品
+     * @param uploadItem 所删除的物品
+     * @return
+     */
     @DeleteMapping("item/delete")
     ResponseData deleteItem(@RequestBody ItemFront uploadItem) {
         if(uploadItem.isSold())
@@ -75,6 +86,7 @@ public class ItemController {
         Subject s= SecurityUtils.getSubject();
         s.isPermitted("item:delete:"+uploadItem.getId());
         itemService.deleteItem(uploadItem);
+        esItemService.delete(uploadItem.getId());
         return new ResponseData(ExceptionMsg.SUCCESS);
     }
 }

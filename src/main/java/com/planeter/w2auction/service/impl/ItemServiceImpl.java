@@ -64,4 +64,9 @@ public class ItemServiceImpl implements ItemService {
             messageService.push(m);
         }
     }
+
+    @Override
+    public void deleteById(Long id) {
+        itemDao.deleteById(id);
+    }
 }

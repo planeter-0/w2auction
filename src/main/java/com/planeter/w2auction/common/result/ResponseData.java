@@ -31,6 +31,10 @@ public class ResponseData extends Response {
         this.data = data;
     }
 
+    public ResponseData() {
+
+    }
+
     public Object getData() {
         return data;
     }

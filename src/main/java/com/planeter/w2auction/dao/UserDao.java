@@ -18,7 +18,7 @@ public interface UserDao extends JpaRepository<User, Long> {
     @Query("SELECT i.id FROM Item AS i WHERE i.username = :username")
     List<Long> getItemIds(String username);
 
-    @Query("SELECT o.id FROM Order AS o WHERE o.buyerId = :userId")
+    @Query("SELECT o.id FROM OrderEntity AS o WHERE o.buyerId = :userId")
     List<Long> getOrderIds(Long userId);
 
     @Modifying

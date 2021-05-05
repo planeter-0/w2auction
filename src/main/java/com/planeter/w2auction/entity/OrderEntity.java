@@ -7,7 +7,8 @@ import java.util.Date;
 
 @Data
 @Entity
-public class Order {
+@Table(name = "order_")
+public class OrderEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,7 +25,7 @@ public class Order {
 
     private boolean complete;
 
-    public Order(Long id, String address, Date deliverTime, String phone, Long itemId, Long buyerId, boolean complete) {
+    public OrderEntity(Long id, String address, Date deliverTime, String phone, Long itemId, Long buyerId, boolean complete) {
         this.id = id;
         this.address = address;
         this.deliverTime = deliverTime;
@@ -34,7 +35,7 @@ public class Order {
         this.complete = complete;
     }
 
-    public Order() {
+    public OrderEntity() {
 
     }
 }

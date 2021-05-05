@@ -2,10 +2,8 @@ package com.planeter.w2auction.service.impl;
 
 import com.planeter.w2auction.common.utils.DtoUtils;
 import com.planeter.w2auction.dao.OrderDao;
-import com.planeter.w2auction.dto.ItemFront;
 import com.planeter.w2auction.dto.OrderFront;
-import com.planeter.w2auction.entity.Item;
-import com.planeter.w2auction.entity.Order;
+import com.planeter.w2auction.entity.OrderEntity;
 import com.planeter.w2auction.service.OrderService;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +31,7 @@ public class OrderServiceImp implements OrderService {
     @Override
     public List<OrderFront> getMine(Long buyerId) {
         List<OrderFront> fronts = new ArrayList<>();
-        for(Order o:orderDao.findOrdersByBuyerId(buyerId)){
+        for(OrderEntity o:orderDao.findOrdersByBuyerId(buyerId)){
             fronts.add(dtoUtils.toOrderFront(o));
         }
         return fronts;
@@ -47,7 +45,7 @@ public class OrderServiceImp implements OrderService {
     @Override
     public List<OrderFront> viewAll() {
         List<OrderFront> list = new ArrayList<>();
-        for(Order o:orderDao.findAll()){
+        for(OrderEntity o:orderDao.findAll()){
             list.add(dtoUtils.toOrderFront(o));
         }
         return list;

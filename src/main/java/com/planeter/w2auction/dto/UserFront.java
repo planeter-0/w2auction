@@ -1,5 +1,6 @@
 package com.planeter.w2auction.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 
@@ -16,6 +17,7 @@ import java.util.Date;
  * @status dev
  */
 @Data
+@AllArgsConstructor
 public class UserFront {
     private Long id; // 主键.
     private String username; // 登录账户,唯一.

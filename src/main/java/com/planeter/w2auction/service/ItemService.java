@@ -18,4 +18,5 @@ public interface ItemService {
     void deleteItem(ItemFront front);
     /** 审核,不通过假删除 */
     void verify(Long id,boolean verified);
+    void deleteById(Long id);
 }

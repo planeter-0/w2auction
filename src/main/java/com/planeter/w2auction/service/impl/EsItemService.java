@@ -27,11 +27,11 @@ public class EsItemService {
     ESUtils esUtils;
     public List<Map<String, Object>> search(String key) throws IOException {
         MultiMatchQueryBuilder matchQuery= QueryBuilders.multiMatchQuery(key, "name", "detail", "tags").analyzer("ik_max_word");
-        TermQueryBuilder termQuery = QueryBuilders.termQuery("verified", true);
+        TermQueryBuilder termQuery = QueryBuilders.termQuery("verified", false);
         QueryBuilder totalFilter = QueryBuilders.boolQuery()
                 .filter(matchQuery)
                 .must(termQuery);
-        return esUtils.searchListData("item",new SearchSourceBuilder().query(totalFilter),100,-1,"","name","name");
+        return esUtils.searchListData("item",new SearchSourceBuilder().query(totalFilter),100,-1,"","name","");
     }
     public String add(ItemFront item){
         String ret = "";

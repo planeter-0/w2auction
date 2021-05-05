@@ -1,10 +1,13 @@
 package com.planeter.w2auction.common.utils;
 
 import com.planeter.w2auction.dao.ItemDao;
+import com.planeter.w2auction.dao.UserDao;
 import com.planeter.w2auction.dto.ItemFront;
 import com.planeter.w2auction.dto.OrderFront;
+import com.planeter.w2auction.dto.UserFront;
 import com.planeter.w2auction.entity.Item;
-import com.planeter.w2auction.entity.Order;
+import com.planeter.w2auction.entity.OrderEntity;
+import com.planeter.w2auction.entity.User;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -24,6 +27,8 @@ import java.util.List;
 public class DtoUtils {
     @Resource
     ItemDao itemDao;
+    @Resource
+    UserDao userDao;
     public static ItemFront toItemFront(Item item){
         return new ItemFront(item.getId(),
                 item.getName(),
@@ -48,7 +53,18 @@ public class DtoUtils {
                 item.isSold(),
                 longListParser((item.getImageIds())));
     }
-    public OrderFront toOrderFront(Order order){
+
+    public static UserFront toUserFront(User user) {
+        return new UserFront(user.getId(),
+                user.getUsername(),
+                user.getNickname(),
+                user.getStatus(),
+                user.getCreateTime(),
+                user.getGender(),
+                user.getImageId());
+    }
+
+    public OrderFront toOrderFront(OrderEntity order){
         return new OrderFront(order.getId(),
                 order.getAddress(),
                 order.getDeliverTime(),
@@ -57,8 +73,8 @@ public class DtoUtils {
                 order.getBuyerId(),
                 order.isComplete());
     }
-    public static Order toOrder(OrderFront front){
-        return new Order(front.getId(),
+    public static OrderEntity toOrder(OrderFront front){
+        return new OrderEntity(front.getId(),
                 front.getAddress(),
                 front.getDeliverTime(),
                 front.getPhone(),

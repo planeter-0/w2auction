@@ -2,7 +2,6 @@ package com.planeter.w2auction.controller;
 
 import com.planeter.w2auction.common.result.ExceptionMsg;
 import com.planeter.w2auction.common.result.ResponseData;
-import com.planeter.w2auction.common.utils.JwtUtils;
 import com.planeter.w2auction.dto.UserFront;
 import com.planeter.w2auction.dto.UserInfo;
 import com.planeter.w2auction.entity.User;
@@ -12,19 +11,16 @@ import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.util.HtmlUtils;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
  * @description: user
  * @author Planeter
  * @date 2021/4/29 20:57
- * @status dev
+ * @status ok
  */
 @RestController
 public class UserController {
@@ -98,11 +94,35 @@ public class UserController {
      */
     @PutMapping("/user/update")
     public ResponseData updateMember(@RequestBody UserFront front){
-        User user = userService.findByUsername(front.getUsername());
-        user.setNickname(front.getNickname());
-        user.setGender(front.getGender());
-        user.setImageId(front.getImageId());
-        userService.save(user);
-        return new ResponseData(ExceptionMsg.SUCCESS);
+        Subject subject = SecurityUtils.getSubject();
+        User user;
+        if(subject.getPrincipals() != null) {
+            user = (User) subject.getPrincipals().getPrimaryPrincipal();
+            user.setNickname(front.getNickname());
+            user.setGender(front.getGender());
+            user.setImageId(front.getImageId());
+            userService.save(user);
+            return new ResponseData(ExceptionMsg.SUCCESS);
+        }
+        return new ResponseData(ExceptionMsg.FAILED);
+    }
+
+    /**
+     * 更新密码
+     * @param newPsw
+     * @return
+     */
+    @PutMapping("/user/setPassword")
+    public ResponseData setPassword(@RequestParam String newPsw){
+        Subject subject = SecurityUtils.getSubject();
+        if(subject.getPrincipals() != null) {
+            User user = (User) subject.getPrincipals().getPrimaryPrincipal();
+            userService.setPassword(user.getUsername(), newPsw);
+            // 强制登出
+            userService.deleteJwtUser(user.getUsername());
+            subject.logout();
+            return new ResponseData(ExceptionMsg.SUCCESS);
+        }
+        return new ResponseData(ExceptionMsg.FAILED);
     }
 }

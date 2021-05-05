@@ -90,4 +90,10 @@ public class UserServiceImpl implements UserService {
         userDao.updateSalt(username,JwtUtils.generateSalt());
     }
 
+    @Override
+    public void setPassword(String username, String newPassword) {
+        String encodedPassword = BCrypt.hashpw(newPassword, BCrypt.gensalt());
+        userDao.updatePassWord(username,encodedPassword);
+    }
+
 }

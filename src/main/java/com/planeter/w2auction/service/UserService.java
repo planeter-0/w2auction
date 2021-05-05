@@ -22,4 +22,6 @@ public interface UserService {
     boolean isAdminUser(String username);
     /** 清理用户的jwt salt,无效化jwt */
     void deleteJwtUser(String username);
+    /** s设置密码 */
+    void setPassword(String username, String newPassword);
 }

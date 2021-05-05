@@ -20,8 +20,7 @@ public class User {
     private String password; // 密码
     private String salt; // 加密密码的盐
     private Integer status;//启用状态:0->禁用；1->启用
-    @CreatedDate
-    private Date createTime;//创建时间
+    private Date createTime = new Date();//创建时间
     //性别：0->未知；1->男；2->女")
     private Integer gender = 0;
     private Long imageId;

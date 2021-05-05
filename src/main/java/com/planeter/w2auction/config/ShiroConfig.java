@@ -1,4 +1,4 @@
-package com.planeter.w2auction.common.shiro;
+package com.planeter.w2auction.config;
 
 import com.planeter.w2auction.common.filter.XSSFilter;
 import com.planeter.w2auction.service.UserService;

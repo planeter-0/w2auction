@@ -42,7 +42,7 @@ public class ItemController {
      * @param key 模糊词
      * @return List<Map < String, Object>>
      */
-    @GetMapping("/item/search")
+    @GetMapping("/searchItem")
     ResponseData getAllVerifiedItem(@RequestParam String key) throws IOException {
         //TODO elasticsearch 使用key进行关键字搜索
         return new ResponseData(ExceptionMsg.SUCCESS, esItemService.search(key));
@@ -75,7 +75,7 @@ public class ItemController {
      * @param uploadItem 所上传的物品
      * @return
      */
-    @PostMapping("/item/upload")
+    @PostMapping("/uploadItem")
     ResponseData uploadItem(@RequestBody ItemFront uploadItem) {
         Subject subject = SecurityUtils.getSubject();
         if (subject.getPrincipals() != null) {
@@ -96,8 +96,8 @@ public class ItemController {
      * @param itemId 所删除物品id
      * @return
      */
-    @DeleteMapping("item/{itemId}")
-    ResponseData deleteItem(@PathVariable Long itemId) {
+    @DeleteMapping("/deleteItem")
+    ResponseData deleteItem(@RequestParam Long itemId) {
         Item i = itemService.getItem(itemId);
         if (i.isSold())
             return new ResponseData(ExceptionMsg.FAILED, "该物品已售出");

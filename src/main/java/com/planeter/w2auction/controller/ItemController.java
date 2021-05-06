@@ -43,9 +43,13 @@ public class ItemController {
      * @return List<Map < String, Object>>
      */
     @GetMapping("/searchItem")
-    ResponseData getAllVerifiedItem(@RequestParam String key) throws IOException {
+    ResponseData getAllVerifiedItem(@RequestParam String key,
+                                    @RequestParam(defaultValue= "10") Integer size,
+                                    @RequestParam(defaultValue = "0") Integer from,
+                                    @RequestParam(defaultValue = "") String sortField,
+                                    @RequestParam(defaultValue = "") String sortOrder) throws IOException {
         //TODO elasticsearch 使用key进行关键字搜索
-        return new ResponseData(ExceptionMsg.SUCCESS, esItemService.search(key));
+        return new ResponseData(ExceptionMsg.SUCCESS, esItemService.search(key,size,from,sortField,sortOrder));
     }
 
 

@@ -308,6 +308,7 @@ public class ESUtils {
                                                     Integer from,
                                                     String fields,
                                                     String sortField,
+                                                    SortOrder sortOrder,
                                                     String highlightField) throws IOException {
         SearchRequest request = new SearchRequest(index);
         SearchSourceBuilder builder = query;
@@ -321,7 +322,9 @@ public class ESUtils {
         builder.size(size);
         if (StringUtils.isNotEmpty(sortField)){
             //排序字段，注意如果proposal_no是text类型会默认带有keyword性质，需要拼接.keyword
-            builder.sort(sortField+".keyword", SortOrder.ASC);
+            if(sortOrder!=null) {
+                builder.sort(sortField + ".keyword", sortOrder);
+            }
         }
         //高亮
         HighlightBuilder highlight = new HighlightBuilder();

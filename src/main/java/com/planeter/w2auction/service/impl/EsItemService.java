@@ -8,6 +8,7 @@ import com.planeter.w2auction.entity.Item;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -25,13 +26,27 @@ import java.util.*;
 public class EsItemService {
     @Resource
     ESUtils esUtils;
-    public List<Map<String, Object>> search(String key) throws IOException {
+    public List<Map<String, Object>> search(String key,Integer size, Integer from,String sortField,String sortOrder) throws IOException {
         MultiMatchQueryBuilder matchQuery= QueryBuilders.multiMatchQuery(key, "name", "detail", "tags").analyzer("ik_max_word");
         TermQueryBuilder termQuery = QueryBuilders.termQuery("verified", false);
+        TermQueryBuilder terQuery_ = QueryBuilders.termQuery("verified", false);
         QueryBuilder totalFilter = QueryBuilders.boolQuery()
                 .filter(matchQuery)
                 .must(termQuery);
-        return esUtils.searchListData("item",new SearchSourceBuilder().query(totalFilter),100,-1,"","name","");
+        SortOrder order = null;
+        if(sortOrder.equals("ASC")){
+            order = SortOrder.ASC;
+        }else if(sortOrder.equals("DESC")){
+            order = SortOrder.DESC;
+        }
+        return esUtils.searchListData("item",
+                new SearchSourceBuilder().query(totalFilter),
+                size,
+                from,
+                "",
+                sortField,
+                order,
+                "");
     }
     public String add(ItemFront item){
         String ret = "";

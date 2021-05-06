@@ -56,9 +56,6 @@ public class AdminController {
         }
     }
 
-    /**
-     * @return List<ItemFront> 所有物品
-     */
     @PutMapping("/verify")
     @RequiresRoles("admin")
     ResponseData verify(@RequestParam Long itemId, @RequestParam boolean verified) {

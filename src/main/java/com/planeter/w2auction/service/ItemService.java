@@ -16,7 +16,7 @@ public interface ItemService {
     Item uploadItem(ItemFront upload);
     /** 删除未售出商品*/
     void deleteItem(ItemFront front);
-    /** 审核,不通过假删除 */
+    /** 审核, 修改物品状态, 未通过审核发布消息 */
     void verify(Long id,boolean verified);
     void deleteById(Long id);
 }

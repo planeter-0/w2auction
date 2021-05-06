@@ -1,6 +1,6 @@
 package com.planeter.w2auction.controller;
 
-import com.planeter.w2auction.common.result.ExceptionMsg;
+import com.planeter.w2auction.common.enums.ExceptionMsg;
 import com.planeter.w2auction.common.result.ResponseData;
 import com.planeter.w2auction.common.utils.QiniuUtils;
 import com.planeter.w2auction.dao.ImageDao;

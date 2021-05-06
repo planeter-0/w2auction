@@ -7,6 +7,7 @@ import com.planeter.w2auction.entity.Item;
 import com.planeter.w2auction.entity.Message;
 import com.planeter.w2auction.service.ItemService;
 import com.planeter.w2auction.service.MessageService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 public class ItemServiceImpl implements ItemService {
     @Resource
     ItemDao itemDao;
@@ -22,20 +24,21 @@ public class ItemServiceImpl implements ItemService {
 
 
     @Override
-    //TODO elasticsearch
+    @Deprecated //已在EsItemService中实现
     public List<ItemFront> search(String key) {
         //return itemDao.findAllByVerified(true);
         return null;
     }
-    //v
+
     @Override
     public List<ItemFront> viewAll() {
         List<ItemFront> list = new ArrayList<>();
-        for(Item i:itemDao.findAll()){
+        for (Item i : itemDao.findAll()) {
             list.add(DtoUtils.toItemFront(i));
         }
         return list;
     }
+
     //v
     @Override
     public Item getItem(Long itemId) {
@@ -56,12 +59,17 @@ public class ItemServiceImpl implements ItemService {
     //v
     @Override
     public void verify(Long id, boolean verified) {
+        //TODO 写jpql update
         Item item = itemDao.getOne(id);
+        item.setVerified(verified);
+        itemDao.save(item);
+        // 审核未通过, 发送消息
         if (!verified) {
-            //TODO redis缓存消息
             String content = item.getName() + "被删除";
-            Message m = new Message(content, item.getUsername());
+            //TODO amqp延时队列
+            Message m = new Message(item.getUsername(), content);
             messageService.push(m);
+            log.info(content + ", 消息已发送给卖家");
         }
     }
 

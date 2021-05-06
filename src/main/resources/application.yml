@@ -49,6 +49,9 @@ spring:
       uris: http://localhost:9200
       username: elastic
       password: 123456
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
 #logging:
 #  level:
 #    root: info

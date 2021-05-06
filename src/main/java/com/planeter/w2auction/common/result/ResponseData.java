@@ -1,5 +1,7 @@
 package com.planeter.w2auction.common.result;
 
+import com.planeter.w2auction.common.enums.ExceptionMsg;
+
 /**
  * @description: 有数据响应
  * @author Planeter

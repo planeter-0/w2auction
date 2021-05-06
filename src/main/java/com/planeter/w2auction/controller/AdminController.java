@@ -1,6 +1,6 @@
 package com.planeter.w2auction.controller;
 
-import com.planeter.w2auction.common.result.ExceptionMsg;
+import com.planeter.w2auction.common.enums.ExceptionMsg;
 import com.planeter.w2auction.common.result.ResponseData;
 import com.planeter.w2auction.service.ItemService;
 import com.planeter.w2auction.service.OrderService;
@@ -14,7 +14,7 @@ import javax.annotation.Resource;
  * @author Planeter
  * @description: admin
  * @date 2021/4/29 20:54
- * @status dev
+ * @status ok
  */
 @RestController
 @RequestMapping("/admin")
@@ -27,6 +27,7 @@ public class AdminController {
     UserService userService;
 
     /**
+     * 获取所有物品
      * @return List<ItemFront> 所有物品
      */
     @GetMapping("/getItems")
@@ -37,6 +38,7 @@ public class AdminController {
     }
 
     /**
+     * 获取所有订单
      * @return List<OrderFront> 所有订单
      */
     @GetMapping("/getOrders")
@@ -45,6 +47,11 @@ public class AdminController {
         return new ResponseData(ExceptionMsg.SUCCESS, orderService.viewAll());
     }
 
+    /**
+     * 删除非管理员用户
+     * @param username 用户名
+     * @return
+     */
     @DeleteMapping("/deleteUser")
     @RequiresRoles("admin")
     public ResponseData deleteUser(@RequestParam String username) {
@@ -56,6 +63,12 @@ public class AdminController {
         }
     }
 
+    /**
+     * 审核物品, 修改物品的verified字段, 若未物品通过审核通知卖家
+     * @param itemId 物品id
+     * @param verified 是否通过审核 TODO 改为整形status, 0 未审核, 1 审核通过, 2 审核未通过
+     * @return
+     */
     @PutMapping("/verify")
     @RequiresRoles("admin")
     ResponseData verify(@RequestParam Long itemId, @RequestParam boolean verified) {

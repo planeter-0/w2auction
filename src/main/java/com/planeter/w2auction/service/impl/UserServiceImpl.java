@@ -48,8 +48,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void delete(String username) {
-        userDao.deleteByUsername(username);
-        messageService.push(new Message("Your account have been delete", username));
+        //TODO jpql update
+        User u = userDao.findByUsername(username);
+        u.setStatus(0);
+        userDao.save(u);
+        messageService.push(new Message(username,"Your account have been delete"));
     }
 
     @Override

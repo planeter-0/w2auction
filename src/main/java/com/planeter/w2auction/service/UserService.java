@@ -8,7 +8,7 @@ public interface UserService {
     boolean isValid(String username);
     /** 注册用户 */
     User register(String username,String password);
-    /** 删除用户 */
+    /** 修改用户状态为禁用 */
     void delete(String username);
     /** 更新用户 */
     void save(User user);

@@ -5,6 +5,7 @@ import com.planeter.w2auction.common.result.ResponseData;
 import com.planeter.w2auction.service.ItemService;
 import com.planeter.w2auction.service.OrderService;
 import com.planeter.w2auction.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +17,7 @@ import javax.annotation.Resource;
  * @date 2021/4/29 20:54
  * @status ok
  */
+@Slf4j
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
@@ -48,7 +50,7 @@ public class AdminController {
     }
 
     /**
-     * 删除非管理员用户
+     * 禁用账户(非管理员用户)
      * @param username 用户名
      * @return
      */
@@ -57,6 +59,8 @@ public class AdminController {
     public ResponseData deleteUser(@RequestParam String username) {
         if (!userService.isAdminUser(username)) {
             userService.delete(username);
+            userService.deleteJwtUser(username);//清除jwt用户,强制下线
+            log.info("用户"+username+"被禁用");
             return new ResponseData(ExceptionMsg.SUCCESS);
         } else {
             return new ResponseData(ExceptionMsg.NoSuchPermission);

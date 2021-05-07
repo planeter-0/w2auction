@@ -59,9 +59,14 @@ public class UserController {
         try {
             //UsernamePasswordToken交给DbShiroRealm进行凭证匹配
             subject.login(new UsernamePasswordToken(username, password));
-            //生成JwtToken并存储生成用的salt
-            jwtToken = userService.generateJwtToken(username);
-            response.setHeader("x-auth-token",jwtToken);
+            User u = (User) subject.getPrincipal();
+            // 账户未被禁用
+            if(u.getStatus()==1) {
+                //生成JwtToken并存储生成用的salt
+                jwtToken = userService.generateJwtToken(username);
+                response.setHeader("x-auth-token", jwtToken);
+            } else
+                return new ResponseData(ExceptionMsg.AccountForbidden);
         } catch (UnknownAccountException e) {
             e.printStackTrace();
             return new ResponseData(ExceptionMsg.UserNameWrong);

@@ -21,6 +21,8 @@ public class ItemServiceImpl implements ItemService {
     ItemDao itemDao;
     @Resource
     MessageService messageService;
+    @Resource
+    EsItemService esItemService;
 
 
     @Override
@@ -61,10 +63,15 @@ public class ItemServiceImpl implements ItemService {
     public void verify(Long id, boolean verified) {
         //TODO 写jpql update
         Item item = itemDao.getOne(id);
-        item.setVerified(verified);
-        itemDao.save(item);
-        // 审核未通过, 发送消息
-        if (!verified) {
+        if (verified) {
+            //mysql修改
+            item.setVerified(true);
+            itemDao.save(item);
+            //es修改
+            esItemService.update(DtoUtils.toItemFront(item));
+        }// 审核未通过, 只删除mysql, 发送消息. todo 把布尔型verify修改为整形status,0,1,2对应未审核,审核通过,审核未通过
+        else {
+            itemDao.deleteById(id);
             String content = item.getName() + "被删除";
             //TODO amqp延时队列
             Message m = new Message(item.getUsername(), content);

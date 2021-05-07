@@ -5,6 +5,7 @@ import com.planeter.w2auction.entity.Item;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -14,7 +15,7 @@ import java.util.Date;
  * @status dev
  */
 @Data
-public class OrderFront {
+public class OrderFront implements Serializable {
     private Long id;
 
     private String address;

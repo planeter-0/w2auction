@@ -8,6 +8,7 @@ import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -18,7 +19,7 @@ import java.util.Date;
  */
 @Data
 @AllArgsConstructor
-public class UserFront {
+public class UserFront implements Serializable {
     private Long id; // 主键.
     private String username; // 登录账户,唯一.
     private String nickname;

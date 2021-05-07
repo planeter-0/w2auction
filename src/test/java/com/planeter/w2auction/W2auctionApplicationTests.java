@@ -6,8 +6,10 @@ import com.planeter.w2auction.entity.Role;
 import com.planeter.w2auction.entity.User;
 import org.junit.jupiter.api.Test;
 import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.servlet.ServletComponentScan;
+import org.springframework.data.redis.core.RedisTemplate;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -20,6 +22,9 @@ class W2auctionApplicationTests {
     RoleDao roleDao;
     @Resource
     UserDao userDao;
+    @Resource
+    private RedisTemplate<String,String> redisTemplate;
+
     @Test
     void addAdmin() {
         User user;
@@ -35,5 +40,11 @@ class W2auctionApplicationTests {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Test
+    public void set(){
+        redisTemplate.opsForValue().set("myKey","myValue");
+        System.out.println(redisTemplate.opsForValue().get("myKey"));
     }
 }

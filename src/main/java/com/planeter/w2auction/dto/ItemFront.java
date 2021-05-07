@@ -6,6 +6,7 @@ import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -16,7 +17,7 @@ import java.util.List;
  * @status dev
  */
 @Data
-public class ItemFront {
+public class ItemFront implements Serializable {
     private Long id;
     private String name;
     private Double price;

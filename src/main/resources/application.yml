@@ -6,7 +6,6 @@ spring:
   redis:
     host: 127.0.0.1
     port: 6379
-    password: 123456
     jedis:
       pool:
         max-active: 8
@@ -15,6 +14,7 @@ spring:
         min-idle: 0
     lettuce:
       shutdown-timeout: 0
+
   main:
     allow-bean-definition-overriding: true
 
@@ -29,6 +29,7 @@ spring:
       enabled: true
       max-file-size: 100MB
       max-request-size: 1000MB
+
   jpa:
     database: mysql
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
@@ -39,16 +40,19 @@ spring:
       hibernate:
         enable_lazy_load_no_trans: true
         dialect: org.hibernate.dialect.MySQL57Dialect
+
   rabbitmq:
     host: 127.0.0.1
     port: 5672
     username: guest
     password: guest
+
   elasticsearch:
     rest:
       uris: http://localhost:9200
       username: elastic
       password: 123456
+
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8

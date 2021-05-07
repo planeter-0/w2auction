@@ -22,15 +22,16 @@ import java.util.List;
 public class PermissionServiceImp implements PermissionService {
     @Resource
     UserDao userDao;
-    private static final List<String> dynamicPermissions = new ArrayList<>();
+    private static final List<String> dynamicItemPermissions = new ArrayList<>();
+    private static final List<String> dynamicOrderPermissions = new ArrayList<>();
 
     static {
-        dynamicPermissions.add("item:delete:");
-        dynamicPermissions.add("item:update:");
-        dynamicPermissions.add("order:view:");
-        dynamicPermissions.add("order:update:");
+        dynamicItemPermissions.add("item:delete:");
+        dynamicItemPermissions.add("item:update:");
+        dynamicOrderPermissions.add("order:view:");
+        dynamicOrderPermissions.add("order:update:");
     }
-
+    //TODO 缓存用户权限
     @Override
     public List<String> getPermissionsByUsername(User user) {
         List<String> permissionStrList = new ArrayList<>();
@@ -46,13 +47,16 @@ public class PermissionServiceImp implements PermissionService {
 
     public List<String> getDynamicPermissions(User user) {
         List<String> permissionStrList = new ArrayList<>();
-        List<Long> instanceIds = new ArrayList<>();
-        instanceIds.addAll(userDao.getOrderIds(user.getId()));
-        instanceIds.addAll(userDao.getItemIds(user.getUsername()));
-        Iterator<Long> idIterator = instanceIds.stream().iterator();
-        for (String s : dynamicPermissions) {
-            while (idIterator.hasNext()) {
-                permissionStrList.add(s + idIterator.next());
+        List<Long> itemIds = userDao.getItemIds(user.getUsername());
+        List<Long> orderIds = userDao.getOrderIds(user.getId());
+        for (String s : dynamicItemPermissions) {
+            for (Long l : itemIds) {
+                permissionStrList.add(s + l);
+            }
+        }
+        for (String s : dynamicOrderPermissions) {
+            for (Long l : orderIds) {
+                permissionStrList.add(s + l);
             }
         }
         return permissionStrList;

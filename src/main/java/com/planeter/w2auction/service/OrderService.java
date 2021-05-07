@@ -5,8 +5,9 @@ import com.planeter.w2auction.dto.OrderFront;
 import java.util.List;
 
 public interface OrderService {
-    /** 下单 */
-    void createOrder(OrderFront order);
+    /** 下单
+     * @return*/
+    boolean createOrder(OrderFront order);
     /** 查看自己全部订单 */
     List<OrderFront> getMine(Long userId);
     /** 获取订单 */

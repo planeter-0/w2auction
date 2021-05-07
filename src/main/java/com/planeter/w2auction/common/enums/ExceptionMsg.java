@@ -15,6 +15,7 @@ public enum  ExceptionMsg {
     NoSuchRole("100300","没有相应角色"),
     NoSuchPermission("100400","没有相应权限"),
     NoSuchEntity("200100","没有该实体"),
+    Sold("200200","已售出"),
     UnPassed("000300","审核未通过"),
     UploadFailed("000400","上传图片失败"),
     ;

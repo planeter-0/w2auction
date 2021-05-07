@@ -2,9 +2,13 @@ package com.planeter.w2auction.controller;
 
 import com.planeter.w2auction.common.enums.ExceptionMsg;
 import com.planeter.w2auction.common.result.ResponseData;
+import com.planeter.w2auction.dto.ItemFront;
 import com.planeter.w2auction.dto.OrderFront;
+import com.planeter.w2auction.entity.Message;
 import com.planeter.w2auction.entity.User;
+import com.planeter.w2auction.service.MessageService;
 import com.planeter.w2auction.service.OrderService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.springframework.web.bind.annotation.*;
@@ -17,11 +21,13 @@ import javax.annotation.Resource;
  * @date 2021/4/29 20:57
  * @status ok
  */
+@Slf4j
 @RestController
 public class OrderController {
     @Resource
     OrderService orderService;
-
+    @Resource
+    MessageService messageService;
     /**
      *  获取自己的订单
      * @return List<OrderFront>
@@ -33,7 +39,7 @@ public class OrderController {
     }
 
     /**
-     *  创建订单
+     *  创建订单, 推送消息
      * @param front 订单
      * @return
      */
@@ -41,8 +47,15 @@ public class OrderController {
     public ResponseData create(@RequestBody OrderFront front) {
         User user = (User) SecurityUtils.getSubject().getPrincipal();
         front.setBuyerId(user.getId());
-        orderService.createOrder(front);
-        return new ResponseData(ExceptionMsg.SUCCESS);
+        ItemFront item = front.getItem();
+        //创建订单并修改item的isSold
+        if(orderService.createOrder(front)){
+            //推送消息
+            String content = new String("你的物品"+item.getName()+"已被"+user.getUsername()+"下单");
+            messageService.push(new Message(item.getUsername(), content));
+            return new ResponseData(ExceptionMsg.SUCCESS);
+        }
+        return new ResponseData(ExceptionMsg.Sold);
     }
 
     /**
@@ -54,7 +67,8 @@ public class OrderController {
     //只有订单所有者和管理员能看订单详情
     public ResponseData view(@PathVariable Long orderId){
         Subject s= SecurityUtils.getSubject();
-        s.isPermitted("item:view:"+orderId);
-        return new ResponseData(ExceptionMsg.SUCCESS,orderService.getOrder(orderId));
+        if(s.isPermitted("order:view:"+orderId))
+            return new ResponseData(ExceptionMsg.SUCCESS,orderService.getOrder(orderId));
+        return new ResponseData(ExceptionMsg.NoSuchPermission);
     }
 }

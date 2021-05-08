@@ -46,5 +46,6 @@ class W2auctionApplicationTests {
     public void set(){
         redisTemplate.opsForValue().set("myKey","myValue");
         System.out.println(redisTemplate.opsForValue().get("myKey"));
+//        redisTemplate.opsForValue().set("user",new User("haha","123456",1,null));
     }
 }

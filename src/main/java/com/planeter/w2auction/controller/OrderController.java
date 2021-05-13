@@ -53,13 +53,14 @@ public class OrderController {
         front.setBuyerId(user.getId());
         ItemFront item = front.getItem();
         //创建订单并修改item的isSold
-        if (orderService.createOrder(front)) {
+        Long orderId = orderService.createOrder(front);
+
+        if (orderId != null) {
             //推送消息
             String content = new String("你的物品" + item.getName() + "已被" + user.getUsername() + "下单");
             messageService.push(new Message(item.getUsername(), content));
-            return new ResponseData(ExceptionMsg.SUCCESS);
-        }
-        return new ResponseData(ExceptionMsg.Sold);
+            return new ResponseData(ExceptionMsg.SUCCESS, orderId);
+        } else return new ResponseData(ExceptionMsg.Sold);
     }
 
     /**

@@ -103,6 +103,7 @@ public class ShiroConfig {
         c.addPathDefinition("/logout", "anon,xss,cors");
         c.addPathDefinition("/item/**","anon,xss,cors");
         c.addPathDefinition("/searchItem","anon,cors");
+        c.addPathDefinition("/image/**","anon,cors");
         //其他路径均需要jwt过滤器通过
         c.addPathDefinition("/**", "noSessionCreation,jwt,xss,cors");
         return c;

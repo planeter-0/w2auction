@@ -7,7 +7,7 @@ import java.util.List;
 public interface OrderService {
     /** 下单
      * @return*/
-    boolean createOrder(OrderFront order);
+    Long createOrder(OrderFront order);
     /** 查看自己全部订单 */
     List<OrderFront> getMine(Long userId, Integer type);
     /** 获取订单 */

@@ -6,7 +6,6 @@ import com.planeter.w2auction.dto.ItemFront;
 import com.planeter.w2auction.dto.OrderFront;
 import com.planeter.w2auction.entity.Item;
 import com.planeter.w2auction.entity.Message;
-import com.planeter.w2auction.entity.OrderEntity;
 import com.planeter.w2auction.service.ItemService;
 import com.planeter.w2auction.service.MessageService;
 import lombok.extern.slf4j.Slf4j;
@@ -108,6 +107,15 @@ public class ItemServiceImpl implements ItemService {
             sold = true;
         }
         for (Item i : itemDao.findByUsernameAndAndVerified(username, sold)) {
+            fronts.add(DtoUtils.toItemFront(i));
+        }
+        return fronts;
+    }
+
+    @Override
+    public List<ItemFront> getAllUnVerified() {
+        List<ItemFront> fronts = new ArrayList<>();
+        for (Item i : itemDao.findByVerified(false)) {
             fronts.add(DtoUtils.toItemFront(i));
         }
         return fronts;

@@ -2,6 +2,7 @@ package com.planeter.w2auction.controller;
 
 import com.planeter.w2auction.common.enums.ExceptionMsg;
 import com.planeter.w2auction.common.result.ResponseData;
+import com.planeter.w2auction.common.utils.DtoUtils;
 import com.planeter.w2auction.dto.UserFront;
 import com.planeter.w2auction.dto.UserInfo;
 import com.planeter.w2auction.entity.User;
@@ -56,10 +57,11 @@ public class UserController {
         String password = info.getPassword();
         Subject subject = SecurityUtils.getSubject();
         String jwtToken = null;
+        User u = null;
         try {
             //UsernamePasswordToken交给DbShiroRealm进行凭证匹配
             subject.login(new UsernamePasswordToken(username, password));
-            User u = (User) subject.getPrincipal();
+            u = (User) subject.getPrincipal();
             // 账户未被禁用
             if(u.getStatus()==1) {
                 //生成JwtToken并存储生成用的salt
@@ -76,7 +78,7 @@ public class UserController {
         } catch (Exception e) {
             return new ResponseData(ExceptionMsg.FAILED);
         }
-        return new ResponseData(ExceptionMsg.SUCCESS);
+        return new ResponseData(ExceptionMsg.SUCCESS, DtoUtils.toUserFront(u));
     }
     /**
      * 登出

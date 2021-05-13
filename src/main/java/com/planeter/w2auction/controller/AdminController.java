@@ -40,6 +40,17 @@ public class AdminController {
     }
 
     /**
+     * 获取所有未审核物品
+     * @return List<ItemFront> 所有物品
+     */
+    @GetMapping("/getUnVerified")
+    @RequiresRoles("admin")
+    ResponseData getUnVerifiedItems() {
+        //TODO 分页
+        return new ResponseData(ExceptionMsg.SUCCESS, itemService.getAllUnVerified());
+    }
+
+    /**
      * 获取所有订单
      * @return List<OrderFront> 所有订单
      */

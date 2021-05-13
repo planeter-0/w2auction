@@ -27,6 +27,9 @@ public class MessageServiceImp implements MessageService {
     //v
     @Override
     public List<Message> pull(String username) {
-        return messageDao.getMessagesByTargetEqualsOrderByProducedAtAsc(username);
+        List<Message> messages = messageDao.getMessagesByTargetEqualsOrderByProducedAtAsc(username);
+        //todo 消息增加status字段 0->已读, 1->未读
+        messageDao.deleteAll(messages);
+        return messages;
     }
 }

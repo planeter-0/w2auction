@@ -4,6 +4,7 @@ import com.planeter.w2auction.common.utils.JwtUtils;
 import com.planeter.w2auction.entity.User;
 import com.planeter.w2auction.service.UserService;
 import com.planeter.w2auction.common.shiro.JWTToken;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
@@ -25,8 +26,8 @@ import java.time.ZoneId;
 import java.util.Date;
 
 /**
- * @description: TODO
  * @author Planeter
+ * @description: TODO
  * @date 2021/5/1 14:23
  * @status dev
  */
@@ -49,13 +50,14 @@ public class JwtAuthFilter extends AuthenticatingFilter {
      * 父第一个被调用的方法
      * 返回true则继续，返回false则会调用onAccessDenied()。
      */
+    @SneakyThrows
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
         if (this.isLoginRequest(request, response))
             return true; // 不拦截登录请求
         boolean allowed = false;
         try {
-            allowed = executeLogin(request, response); //处理登录
+        allowed = executeLogin(request, response); //处理登录
         } catch (IllegalStateException e) { // not found any token
             log.warn("Invalid token");
         } catch (Exception e) {
@@ -69,10 +71,10 @@ public class JwtAuthFilter extends AuthenticatingFilter {
         //从header获取token value
         HttpServletRequest httpRequest = WebUtils.toHttp(servletRequest);
         String header = httpRequest.getHeader("x-auth-token");
-        String jwtToken = StringUtils.removeStart(header, "Bearer ");
+//        String jwtToken = StringUtils.removeStart(header, "Bearer ");
         // 非空且不过期,返回原token
-        if (StringUtils.isNotBlank(jwtToken) && !JwtUtils.isTokenExpired(jwtToken))
-            return new JWTToken(jwtToken);
+        if (StringUtils.isNotBlank(header) && !JwtUtils.isTokenExpired(header))
+            return new JWTToken(header);
         return null;//进入isAccessAllowed（）的异常处理逻辑
     }
 

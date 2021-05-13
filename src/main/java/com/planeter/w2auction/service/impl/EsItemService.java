@@ -34,12 +34,12 @@ public class EsItemService {
 
             matchQuery = QueryBuilders.multiMatchQuery(key, "name", "detail", "tags").analyzer("ik_max_word");
 
-            TermQueryBuilder termQuery = QueryBuilders.termQuery("verified", false);
+            TermQueryBuilder termQuery = QueryBuilders.termQuery("verified", true);
             totalFilter = QueryBuilders.boolQuery()
                     .filter(matchQuery)
                     .must(termQuery);
         } else {
-            TermQueryBuilder termQuery = QueryBuilders.termQuery("verified", false);
+            TermQueryBuilder termQuery = QueryBuilders.termQuery("verified", true);
             totalFilter = QueryBuilders.boolQuery()
                     .must(termQuery);
         }

@@ -3,7 +3,6 @@ package com.planeter.w2auction.service.impl;
 import com.planeter.w2auction.common.utils.DtoUtils;
 import com.planeter.w2auction.dao.ItemDao;
 import com.planeter.w2auction.dao.OrderDao;
-import com.planeter.w2auction.dto.ItemFront;
 import com.planeter.w2auction.dto.OrderFront;
 import com.planeter.w2auction.entity.Item;
 import com.planeter.w2auction.entity.OrderEntity;
@@ -31,17 +30,17 @@ public class OrderServiceImp implements OrderService {
 
     @Override
     //v
-    public boolean createOrder(OrderFront order) {
+    public Long createOrder(OrderFront order) {
 
         //TODO jpql update
         Item item = itemDao.getOne(order.getItem().getId());
+        Long orderEntityId = null;
         if (!item.isSold()) {
-            orderDao.save(DtoUtils.toOrder(order));
+            orderEntityId = orderDao.save(DtoUtils.toOrder(order)).getId();
             item.setSold(true);
             itemDao.save(item);
-            return true;
         }
-        return false;
+        return orderEntityId;
     }
 
     @Override

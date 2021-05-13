@@ -11,4 +11,5 @@ public interface ItemDao extends JpaRepository<Item, Long> {
 //    List<Item> findAllInfo();
     List<Item> findByUsernameAndAndVerified(String username, boolean type);
     List<Item> findByUsername(String username);
+    List<Item> findByVerified(boolean verified);
 }

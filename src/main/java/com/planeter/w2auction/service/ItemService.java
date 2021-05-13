@@ -22,4 +22,6 @@ public interface ItemService {
     void deleteById(Long id);
     /** 查看自己全部物品 */
     List<ItemFront> getMine(String username, Integer type);
+
+    List<ItemFront> getAllUnVerified();
 }

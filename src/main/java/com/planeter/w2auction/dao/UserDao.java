@@ -33,4 +33,5 @@ public interface UserDao extends JpaRepository<User, Long> {
     @Transactional
     @Query("UPDATE User AS u SET u.password =:password WHERE u.username = :username")
     void updatePassWord(String username, String password);
+
 }

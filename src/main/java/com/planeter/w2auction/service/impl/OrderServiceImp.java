@@ -3,6 +3,7 @@ package com.planeter.w2auction.service.impl;
 import com.planeter.w2auction.common.utils.DtoUtils;
 import com.planeter.w2auction.dao.ItemDao;
 import com.planeter.w2auction.dao.OrderDao;
+import com.planeter.w2auction.dto.ItemFront;
 import com.planeter.w2auction.dto.OrderFront;
 import com.planeter.w2auction.entity.Item;
 import com.planeter.w2auction.entity.OrderEntity;
@@ -43,11 +44,24 @@ public class OrderServiceImp implements OrderService {
         return false;
     }
 
-    //v
     @Override
-    public List<OrderFront> getMine(Long buyerId) {
+    public List<OrderFront> getMine(Long buyerId, Integer type) {
         List<OrderFront> fronts = new ArrayList<>();
-        for (OrderEntity o : orderDao.findOrdersByBuyerId(buyerId)) {
+        // 全部
+        if (type == 2){
+            for (OrderEntity o : orderDao.findOrdersByBuyerId(buyerId)) {
+                fronts.add(dtoUtils.toOrderFront(o));
+            }
+            return fronts;
+        }
+        boolean complete = false;
+        //未售出
+        if (type == 0) {
+            complete = false;
+        } else if (type == 1) {//已售出
+            complete = true;
+        }
+        for (OrderEntity o : orderDao.findOrdersByBuyerIdAndComplete(buyerId, complete)) {
             fronts.add(dtoUtils.toOrderFront(o));
         }
         return fronts;

@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 
 /**
- * @description: order
  * @author Planeter
+ * @description: order
  * @date 2021/4/29 20:57
  * @status ok
  */
@@ -28,18 +28,22 @@ public class OrderController {
     OrderService orderService;
     @Resource
     MessageService messageService;
+
     /**
-     *  获取自己的订单
+     * 获取自己的订单
+     *
+     * @param type 0->未完成, 1->已完成, 2->全部
      * @return List<OrderFront>
      */
     @GetMapping("/order/mine")
-    public ResponseData getMine() {
+    public ResponseData getMine(@RequestParam Integer type) {
         User user = (User) SecurityUtils.getSubject().getPrincipal();
-        return new ResponseData(ExceptionMsg.SUCCESS, orderService.getMine(user.getId()));
+        return new ResponseData(ExceptionMsg.SUCCESS, orderService.getMine(user.getId(), type));
     }
 
     /**
-     *  创建订单, 推送消息
+     * 创建订单, 推送消息
+     *
      * @param front 订单
      * @return
      */
@@ -49,9 +53,9 @@ public class OrderController {
         front.setBuyerId(user.getId());
         ItemFront item = front.getItem();
         //创建订单并修改item的isSold
-        if(orderService.createOrder(front)){
+        if (orderService.createOrder(front)) {
             //推送消息
-            String content = new String("你的物品"+item.getName()+"已被"+user.getUsername()+"下单");
+            String content = new String("你的物品" + item.getName() + "已被" + user.getUsername() + "下单");
             messageService.push(new Message(item.getUsername(), content));
             return new ResponseData(ExceptionMsg.SUCCESS);
         }
@@ -60,15 +64,16 @@ public class OrderController {
 
     /**
      * 查看订单详情
+     *
      * @param orderId 订单id
      * @return
      */
     @GetMapping("/order/{orderId}")
     //只有订单所有者和管理员能看订单详情
-    public ResponseData view(@PathVariable Long orderId){
-        Subject s= SecurityUtils.getSubject();
-        if(s.isPermitted("order:view:"+orderId))
-            return new ResponseData(ExceptionMsg.SUCCESS,orderService.getOrder(orderId));
+    public ResponseData view(@PathVariable Long orderId) {
+        Subject s = SecurityUtils.getSubject();
+        if (s.isPermitted("order:view:" + orderId))
+            return new ResponseData(ExceptionMsg.SUCCESS, orderService.getOrder(orderId));
         return new ResponseData(ExceptionMsg.NoSuchPermission);
     }
 }

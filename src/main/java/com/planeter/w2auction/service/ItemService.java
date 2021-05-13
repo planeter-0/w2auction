@@ -1,6 +1,7 @@
 package com.planeter.w2auction.service;
 
 import com.planeter.w2auction.dto.ItemFront;
+import com.planeter.w2auction.dto.OrderFront;
 import com.planeter.w2auction.entity.Item;
 
 import java.util.List;
@@ -19,4 +20,6 @@ public interface ItemService {
     /** 审核, 修改物品状态, 未通过审核发布消息 */
     void verify(Long id,boolean verified);
     void deleteById(Long id);
+    /** 查看自己全部物品 */
+    List<ItemFront> getMine(String username, Integer type);
 }

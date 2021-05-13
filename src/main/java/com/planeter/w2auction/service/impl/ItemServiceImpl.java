@@ -3,8 +3,10 @@ package com.planeter.w2auction.service.impl;
 import com.planeter.w2auction.common.utils.DtoUtils;
 import com.planeter.w2auction.dao.ItemDao;
 import com.planeter.w2auction.dto.ItemFront;
+import com.planeter.w2auction.dto.OrderFront;
 import com.planeter.w2auction.entity.Item;
 import com.planeter.w2auction.entity.Message;
+import com.planeter.w2auction.entity.OrderEntity;
 import com.planeter.w2auction.service.ItemService;
 import com.planeter.w2auction.service.MessageService;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +25,8 @@ public class ItemServiceImpl implements ItemService {
     MessageService messageService;
     @Resource
     EsItemService esItemService;
+    @Resource
+    DtoUtils dtoUtils;
 
 
     @Override
@@ -83,5 +87,29 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public void deleteById(Long id) {
         itemDao.deleteById(id);
+    }
+
+
+    @Override
+    public List<ItemFront> getMine(String username, Integer type) {
+        List<ItemFront> fronts = new ArrayList<>();
+        // 全部
+        if (type == 2){
+            for (Item i : itemDao.findByUsername(username)) {
+                fronts.add(DtoUtils.toItemFront(i));
+            }
+            return fronts;
+        }
+        boolean sold = false;
+        //未售出
+        if (type == 0) {
+            sold = false;
+        } else if (type == 1) {//已售出
+            sold = true;
+        }
+        for (Item i : itemDao.findByUsernameAndAndVerified(username, sold)) {
+            fronts.add(DtoUtils.toItemFront(i));
+        }
+        return fronts;
     }
 }

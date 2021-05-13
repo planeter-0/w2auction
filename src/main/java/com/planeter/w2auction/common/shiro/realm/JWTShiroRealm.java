@@ -40,7 +40,7 @@ public class JWTShiroRealm extends AuthorizingRealm {
     }
 
     /**
-     * 和controller登录一样，获取用户的salt值
+     * 获取用户的salt值
      */
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authToken) throws AuthenticationException {

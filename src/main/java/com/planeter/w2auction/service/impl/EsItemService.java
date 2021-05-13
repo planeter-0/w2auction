@@ -26,17 +26,27 @@ import java.util.*;
 public class EsItemService {
     @Resource
     ESUtils esUtils;
-    public List<Map<String, Object>> search(String key,Integer size, Integer from,String sortField,String sortOrder) throws IOException {
-        MultiMatchQueryBuilder matchQuery= QueryBuilders.multiMatchQuery(key, "name", "detail", "tags").analyzer("ik_max_word");
-        TermQueryBuilder termQuery = QueryBuilders.termQuery("verified", false);
-        TermQueryBuilder terQuery_ = QueryBuilders.termQuery("verified", false);
-        QueryBuilder totalFilter = QueryBuilders.boolQuery()
-                .filter(matchQuery)
-                .must(termQuery);
+
+    public List<Map<String, Object>> search(String key, Integer size, Integer from, String sortField, String sortOrder) throws IOException {
+        MultiMatchQueryBuilder matchQuery = null;
+        QueryBuilder totalFilter = null;
+        if (!key.equals("*")) {
+
+            matchQuery = QueryBuilders.multiMatchQuery(key, "name", "detail", "tags").analyzer("ik_max_word");
+
+            TermQueryBuilder termQuery = QueryBuilders.termQuery("verified", false);
+            totalFilter = QueryBuilders.boolQuery()
+                    .filter(matchQuery)
+                    .must(termQuery);
+        } else {
+            TermQueryBuilder termQuery = QueryBuilders.termQuery("verified", false);
+            totalFilter = QueryBuilders.boolQuery()
+                    .must(termQuery);
+        }
         SortOrder order = null;
-        if(sortOrder.equals("ASC")){
+        if (sortOrder.equals("ASC")) {
             order = SortOrder.ASC;
-        }else if(sortOrder.equals("DESC")){
+        } else if (sortOrder.equals("DESC")) {
             order = SortOrder.DESC;
         }
         return esUtils.searchListData("item",
@@ -48,27 +58,30 @@ public class EsItemService {
                 order,
                 "");
     }
-    public String add(ItemFront item){
+
+    public String add(ItemFront item) {
         String ret = "";
         try {
             ret = esUtils.addData(JSON.parseObject(JSONObject.toJSONString(item)), "item", String.valueOf(item.getId()));
-        } catch(Exception e){
-            log.warn("Elasticsearch ADD failed",e);
+        } catch (Exception e) {
+            log.warn("Elasticsearch ADD failed", e);
         }
         return ret;
     }
-    public void delete(Long id)  {
+
+    public void delete(Long id) {
         try {
             esUtils.deleteDataById("item", String.valueOf(id));
-        } catch (Exception e){
-            log.warn("Elasticsearch DELETE failed",e);
+        } catch (Exception e) {
+            log.warn("Elasticsearch DELETE failed", e);
         }
     }
+
     public void update(ItemFront item) {
         try {
             esUtils.updateDataById(item, "item", String.valueOf(item.getId()));
-        } catch (Exception e){
-            log.warn("Elasticsearch DELETE failed",e);
+        } catch (Exception e) {
+            log.warn("Elasticsearch DELETE failed", e);
         }
     }
 }

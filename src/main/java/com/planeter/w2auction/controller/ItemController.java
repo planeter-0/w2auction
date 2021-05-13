@@ -43,12 +43,12 @@ public class ItemController {
      */
     @GetMapping("/searchItem")
     ResponseData getAllVerifiedItem(@RequestParam String key,
-                                    @RequestParam(defaultValue= "10") Integer size,
+                                    @RequestParam(defaultValue = "10") Integer size,
                                     @RequestParam(defaultValue = "0") Integer from,
                                     @RequestParam(defaultValue = "") String sortField,
                                     @RequestParam(defaultValue = "") String sortOrder) throws IOException {
         //TODO elasticsearch 使用key进行关键字搜索
-        return new ResponseData(ExceptionMsg.SUCCESS, esItemService.search(key,size,from,sortField,sortOrder));
+        return new ResponseData(ExceptionMsg.SUCCESS, esItemService.search(key, size, from, sortField, sortOrder));
     }
 
 
@@ -111,5 +111,16 @@ public class ItemController {
             return new ResponseData(ExceptionMsg.SUCCESS);
         }
         return new ResponseData(ExceptionMsg.NoSuchPermission);
+    }
+
+    /**
+     * 获取自己上传的物品
+     * @param type 0->未售出, 1->已售出, 2->全部
+     * @return List<ItemFront>
+     */
+    @GetMapping("/getMyItems")
+    public ResponseData getMine(@RequestParam Integer type) {
+        User user = (User) SecurityUtils.getSubject().getPrincipal();
+        return new ResponseData(ExceptionMsg.SUCCESS, itemService.getMine(user.getUsername(), type));
     }
 }
